@@ -14,7 +14,7 @@
     <modules>
         <module>component-redis</module>
         <module>component-common</module>
-        <module>component-utils</module>
+        <module>component-api</module>
     </modules>
 
 

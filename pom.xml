@@ -37,6 +37,7 @@
         <junit.version>4.12</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <lombok.version>1.18.2</lombok.version>
+        <pagehelper.version>1.2.5</pagehelper.version>
     </properties>
 
     <dependencyManagement>
@@ -52,9 +53,16 @@
     </dependencyManagement>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>
