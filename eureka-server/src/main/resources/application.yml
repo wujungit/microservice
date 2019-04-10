@@ -1,0 +1,15 @@
+server:
+  port: 9010
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false # 提供单一的服务注册功能，不提供其他服务发现，默认为true
+    fetch-registry: false # 是否从注册中心上获取注册信息
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+
+spring:
+  application:
+    name: eurka-server
