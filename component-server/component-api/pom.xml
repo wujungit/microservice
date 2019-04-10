@@ -11,5 +11,12 @@
 
     <artifactId>component-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.kanghe</groupId>
+            <artifactId>component-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

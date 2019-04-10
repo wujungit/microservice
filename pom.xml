@@ -7,7 +7,7 @@
     <groupId>com.kanghe</groupId>
     <artifactId>microservice</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>${project.version}</version>
 
     <modules>
         <module>eureka-server</module>
@@ -34,6 +34,9 @@
         <spring.version>5.0.5.RELEASE</spring.version>
         <!--mybatis-->
         <mybatis.version>3.4.6</mybatis.version>
+        <!--json-->
+        <fastjson.version>1.2.51</fastjson.version>
+        <jackson.version>2.9.6</jackson.version>
         <junit.version>4.12</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <lombok.version>1.18.2</lombok.version>
@@ -54,6 +57,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
@@ -63,6 +70,32 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <!--<exclusions>-->
+            <!--<exclusion>-->
+            <!--<artifactId>jackson-annotations</artifactId>-->
+            <!--<groupId>com.fasterxml.jackson.core</groupId>-->
+            <!--</exclusion>-->
+            <!--</exclusions>-->
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 </project>
