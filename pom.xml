@@ -7,7 +7,7 @@
     <groupId>com.kanghe</groupId>
     <artifactId>microservice</artifactId>
     <packaging>pom</packaging>
-    <version>${project.version}</version>
+    <version>1.0</version>
 
     <modules>
         <module>eureka-server</module>
@@ -24,7 +24,6 @@
     </parent>
 
     <properties>
-        <project.version>1.0</project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
