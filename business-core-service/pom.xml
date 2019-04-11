@@ -14,7 +14,7 @@
     <modules>
         <module>core-manage-service</module>
         <module>core-doctor-service</module>
-        <module>core-patient-service</module>
+        <module>core-member-service</module>
     </modules>
 
 

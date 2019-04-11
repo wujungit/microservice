@@ -1,0 +1,49 @@
+server:
+  port: 8001
+
+# eureka
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    preferIpAddress: true
+  client:
+    healthcheck:
+      enabled: true
+    serviceUrl:
+      defaultZone: http://registerServer1:9010/eureka/,http://registerServer2:9010/eureka/
+    eurekaServiceUrlPollIntervalSeconds: 60
+
+spring:
+  application:
+    name: service-member-manage
+  datasource:
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    minIdle: 5
+    validationQuery: SELECT 1 FROM DUAL
+    initialSize: 5
+    maxWait: 60000
+    filters: stat,wall,log4j
+    poolPreparedStatements: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://139.159.144.194:3306/db_ncdp_memberinfo?useSSL=false&serverTimezone=GMT&allowMultiQueries=true&characterEncoding=UTF-8
+    maxPoolPreparedStatementPerConnectionSize: 20
+    password: khtestdb_1022
+    testOnBorrow: false
+    testWhileIdle: true
+    minEvictableIdleTimeMillis: 300000
+    timeBetweenEvictionRunsMillis: 60000
+    testOnReturn: false
+    driver-class-name: com.mysql.jdbc.Driver
+    maxActive: 20
+    username: khtestuser
+    jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
+      time-zone: GMT+8
+
+logging:
+  file: ./logs/${spring.application.name}.log
+
+mybatis:
+  mapperLocations: classpath:mappings/**/*.xml
+  configLocation: classpath:mybatis-config.xml
+

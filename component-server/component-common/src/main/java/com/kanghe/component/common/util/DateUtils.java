@@ -1,4 +1,4 @@
-package com.kanghe.component.common.utils;
+package com.kanghe.component.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
