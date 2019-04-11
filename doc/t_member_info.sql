@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50641
 File Encoding         : 65001
 
-Date: 2019-04-11 10:42:54
+Date: 2019-04-11 19:58:36
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -47,4 +47,9 @@ CREATE TABLE `t_member_info` (
   `del_flag` tinyint(1) DEFAULT NULL COMMENT '删除标识（0-正常，1-删除）',
   `remarks` varchar(1024) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='会员信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='会员信息表';
+
+-- ----------------------------
+-- Records of t_member_info
+-- ----------------------------
+INSERT INTO `t_member_info` VALUES ('1', 'KMHY1544576387736747', 'http://img01.kanghehealth.com/static/images/07/ca/0f/51/17efb1a822cc4c08b49641c4f7af491f.png', '马云', '0', '18', '180.00', '70.00', '421127199110148888', '18813918888', '1991-11-19', '', '', '1', '0', '2018-10-16 23:33:50', '230000', '230100', '230102', '黑龙江省-哈尔滨市-道里区', '', '\0', '2019-04-11 19:38:07', '2019-04-11 19:38:34', '0', '');
