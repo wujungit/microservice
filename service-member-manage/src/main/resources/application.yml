@@ -34,9 +34,9 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     maxActive: 20
     username: khtestuser
-    jackson:
-      date-format: yyyy-MM-dd HH:mm:ss
-      time-zone: GMT+8
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 logging:
   file: ./logs/${spring.application.name}.log

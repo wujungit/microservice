@@ -1,12 +1,8 @@
-package com.kanghe.service.member.controller;
+package com.kanghe.business.core.manage.controller;
 
-import com.alibaba.fastjson.JSON;
+import com.kanghe.business.core.manage.feign.MemberInfoServiceFeign;
 import com.kanghe.component.common.base.BaseResult;
-import com.kanghe.component.common.base.PageResult;
-import com.kanghe.component.common.constant.ResponseCode;
 import com.kanghe.component.common.dto.member.dto.GetMemberInfoListDTO;
-import com.kanghe.component.common.enums.ResultEnum;
-import com.kanghe.service.member.service.MemberInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,14 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberInfoController {
 
     @Autowired
-    private MemberInfoService memberInfoService;
+    private MemberInfoServiceFeign memberInfoServiceFeign;
 
     @ApiOperation(value = "会员信息列表查询", notes = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping(value = "/getMemberInfoList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public BaseResult getMemberInfoList(@ApiParam @RequestBody GetMemberInfoListDTO dto) {
-        log.info("getMemberInfoList req: {}", JSON.toJSONString(dto));
-        PageResult result = memberInfoService.getMemberInfoList(dto);
-        return new BaseResult<>(ResponseCode.SUCCESS, result, ResultEnum.SUCCESS.getCode(), "会员信息列表查询成功");
+        return memberInfoServiceFeign.getMemberInfoList(dto);
     }
 
 }

@@ -1,0 +1,44 @@
+
+server:
+  port: 8011
+
+spring:
+  application:
+    name: business-health-database-manager
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    prefer-ip-address: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://registerServer1:9010/eureka/,http://registerServer2:9010/eureka/
+
+ribbon:
+  ConnectTimeout: 30000
+  ReadTimeout: 120000
+
+logging:
+  file: ./log/${spring.application.name}.log
+  level:
+    root: info
+
+feign:
+  maxAttempts: 4
+  period: 100
+  readTimeOutMillis: 12000
+  connectTimeOutMillis: 30000
+  okhttp:
+    enabled: true
+  compression:
+    request:
+      mime-types: text/xml,application/xml,application/json
+      min-request-size: 2048
+      enabled: true
+    response:
+      enabled: true
+  maxPeriod: 1000
+  httpclient:
+    enabled: false

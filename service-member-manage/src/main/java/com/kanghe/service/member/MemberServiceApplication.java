@@ -14,8 +14,8 @@ import java.util.Properties;
  * @Date: 2019/4/11 11:56
  * @Description: 会员基础业务
  */
-@EnableSwagger2
 @EnableEurekaClient
+@EnableSwagger2
 @SpringBootApplication
 public class MemberServiceApplication {
 
