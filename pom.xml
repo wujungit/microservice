@@ -2,13 +2,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--pom文件的模型版本-->
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.kanghe</groupId>
-    <artifactId>microservice</artifactId>
+    <!--父类-->
     <packaging>pom</packaging>
+
+    <!--域名.公司名.项目名-->
+    <groupId>com.kanghe</groupId>
+    <!--功能模块名-->
+    <artifactId>microservice</artifactId>
+    <!--版本号-->
     <version>1.0</version>
 
+    <!--声明这是一个springboot的子项目-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.5.RELEASE</version>
+    </parent>
+
+    <!--模块定义-->
     <modules>
         <module>eureka-server</module>
         <module>business-core-service</module>
@@ -18,12 +31,7 @@
         <module>service-member-manage</module>
     </modules>
 
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.5.RELEASE</version>
-    </parent>
-
+    <!--版本管理-->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -48,6 +56,7 @@
         <pagehelper.version>1.2.5</pagehelper.version>
     </properties>
 
+    <!--声明这是一个spring-cloud的子项目-->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -60,6 +69,7 @@
         </dependencies>
     </dependencyManagement>
 
+    <!--父类依赖管理-->
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -108,4 +118,5 @@
             <version>${jackson.version}</version>
         </dependency>
     </dependencies>
+
 </project>
