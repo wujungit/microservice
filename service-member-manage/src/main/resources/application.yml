@@ -39,7 +39,7 @@ spring:
     time-zone: GMT+8
 
 logging:
-  file: ./logs/${spring.application.name}.log
+  file: ./log/${spring.application.name}.log
 
 mybatis:
   mapperLocations: classpath:mapper/**/*.xml
