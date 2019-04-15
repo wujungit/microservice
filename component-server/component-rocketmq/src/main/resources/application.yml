@@ -1,7 +1,13 @@
 server:
   port: 8101
 
-
+apache:
+  rocketmq:
+    consumer:
+      pushConsumer: XiaourPushConsumer
+    producer:
+      producerGroup: Xiaour
+    namesrvAddr: 192.168.2.5:9876
 
 
 
