@@ -2,8 +2,8 @@ package com.kanghe.component.rocketmq.controller;
 
 /**
  * @Author: W_jun1
- * @Date: 2019/4/15 10:38
+ * @Date: 2019/4/15 16:17
  * @Description:
  */
-public class Test {
+public class TestController {
 }
