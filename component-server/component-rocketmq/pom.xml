@@ -2,24 +2,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>microservice</artifactId>
+        <artifactId>component-server</artifactId>
         <groupId>com.kanghe</groupId>
         <version>1.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>component-server</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>component-redis</module>
-        <module>component-common</module>
-        <module>component-api</module>
-        <module>component-rocketmq</module>
-    </modules>
+    <artifactId>component-rocketmq</artifactId>
 
     <dependencies>
-        
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client</artifactId>
+            <version>${rocketmq.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
