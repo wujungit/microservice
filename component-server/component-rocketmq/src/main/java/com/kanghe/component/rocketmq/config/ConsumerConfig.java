@@ -11,18 +11,24 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-public class ConsumerConfig extends CommonConfig {
+public class ConsumerConfig {
 
-    @Value("${rocketmq.consumer.consumeThreadMin}")
-    private int consumeThreadMin;
+    @Value("${apache.rocketmq.namesrvAddr}")
+    private String namesrvAddr;
 
-    @Value("${rocketmq.consumer.consumeThreadMax}")
-    private int consumeThreadMax;
+    @Value("${apache.rocketmq.consumer.comsumerGroup}")
+    private String groupName;
 
-    @Value("${rocketmq.consumer.topics}")
-    private String topics;
-
-    @Value("${rocketmq.consumer.consumeMessageBatchMaxSize}")
-    private int consumeMessageBatchMaxSize;
+//    @Value("${rocketmq.consumer.consumeThreadMin}")
+//    private int consumeThreadMin;
+//
+//    @Value("${rocketmq.consumer.consumeThreadMax}")
+//    private int consumeThreadMax;
+//
+//    @Value("${rocketmq.consumer.topics}")
+//    private String topics;
+//
+//    @Value("${rocketmq.consumer.consumeMessageBatchMaxSize}")
+//    private int consumeMessageBatchMaxSize;
 
 }

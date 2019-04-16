@@ -3,11 +3,16 @@ server:
 
 apache:
   rocketmq:
-    consumer:
-      pushConsumer: XiaourPushConsumer
+    # NameServer地址
+    namesrvAddr: 192.168.0.52:9876
+    # 生产者
     producer:
-      producerGroup: Xiaour
-    namesrvAddr: 192.168.2.5:9876
+      producerGroup: producer
+    # 消费者
+    consumer:
+      comsumerGroup: comsumer
+
+
 
 
 

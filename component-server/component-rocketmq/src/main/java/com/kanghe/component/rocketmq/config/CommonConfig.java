@@ -2,7 +2,6 @@ package com.kanghe.component.rocketmq.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @Author: W_jun1
@@ -10,10 +9,9 @@ import org.springframework.context.annotation.Configuration;
  * @Description:
  */
 @Data
-@Configuration
 public class CommonConfig {
 
-    @Value("${rocketmq.namesrvAddr}")
+    @Value("${apache.rocketmq.namesrvAddr}")
     private String namesrvAddr;
 
     @Value("${rocketmq.groupName}")

@@ -11,24 +11,30 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-public class ProducerConfig extends CommonConfig {
+public class ProducerConfig {
 
-    /**
-     * 消息最大大小，默认4M
-     */
-    @Value("${rocketmq.producer.maxMessageSize}")
-    private Integer maxMessageSize;
+    @Value("${apache.rocketmq.namesrvAddr}")
+    private String namesrvAddr;
 
-    /**
-     * 消息发送超时时间，默认3秒
-     */
-    @Value("${rocketmq.producer.sendMsgTimeout}")
-    private Integer sendMsgTimeout;
+    @Value("${apache.rocketmq.producer.producerGroup}")
+    private String groupName;
 
-    /**
-     * 消息发送失败重试次数，默认2次
-     */
-    @Value("${rocketmq.producer.retryTimesWhenSendFailed}")
-    private Integer retryTimesWhenSendFailed;
+//    /**
+//     * 消息最大大小，默认4M
+//     */
+//    @Value("${rocketmq.producer.maxMessageSize}")
+//    private Integer maxMessageSize;
+//
+//    /**
+//     * 消息发送超时时间，默认3秒
+//     */
+//    @Value("${rocketmq.producer.sendMsgTimeout}")
+//    private Integer sendMsgTimeout;
+//
+//    /**
+//     * 消息发送失败重试次数，默认2次
+//     */
+//    @Value("${rocketmq.producer.retryTimesWhenSendFailed}")
+//    private Integer retryTimesWhenSendFailed;
 
 }
