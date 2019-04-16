@@ -10,6 +10,7 @@ import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * @Author: W_jun1
@@ -17,10 +18,11 @@ import org.springframework.context.annotation.Configuration;
  * @Description:
  */
 @Configuration
+@Component
 public class ConsumerConfigure {
 
     @Autowired
-    ConsumerConfig consumerConfig;
+    private ConsumerConfig consumerConfig;
 
     @Bean
     public DefaultMQPushConsumer getRocketMQConsumer() {
