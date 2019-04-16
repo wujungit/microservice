@@ -42,6 +42,7 @@ public class Consumer implements CommandLineRunner {
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
 
         try {
+            consumer.subscribe("PushTopic", "");
             //在此监听中消费信息，并返回消费的状态信息
             consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
                 // 会把不同的消息分别放置到不同的队列中
