@@ -29,10 +29,10 @@ public class Consumer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        messageListener();
+//        messageListener();
     }
 
-    private void messageListener() {
+    public void messageListener(String topic, String tag) {
         if (StringUtils.isBlank(consumerConfig.getGroupName())) {
             throw new RocketMQException(ResultEnum.INVALID_PARAM.getCode(), "groupName is blank");
         }
@@ -44,7 +44,7 @@ public class Consumer implements CommandLineRunner {
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
 
         try {
-            consumer.subscribe("PushTopic", "");
+            consumer.subscribe(topic, "");
             //在此监听中消费信息，并返回消费的状态信息
             consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
                 // 会把不同的消息分别放置到不同的队列中

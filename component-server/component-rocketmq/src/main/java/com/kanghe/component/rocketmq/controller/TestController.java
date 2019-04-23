@@ -1,6 +1,6 @@
 package com.kanghe.component.rocketmq.controller;
 
-import com.kanghe.component.rocketmq.annotation.MQAnnotation;
+import com.kanghe.component.rocketmq.annotation.MQListener;
 import com.kanghe.component.rocketmq.service.ISendMQService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class TestController {
 
     @GetMapping("/push")
     public String pushMsg(@RequestParam String msg) {
-        return sendMQService.send("PushTopic", "push", msg);
+        return sendMQService.send("PushTopic", "Push", msg);
     }
 
-    @MQAnnotation("param")
+    @MQListener(topic = "PushTopic", tag = "Push")
     @GetMapping("/get")
     public String getMsg() {
         log.info("execute getMsg()");

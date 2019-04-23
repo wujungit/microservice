@@ -5,13 +5,15 @@ import java.lang.annotation.*;
 /**
  * @Author: W_jun1
  * @Date: 2019/4/23 17:38
- * @Description:
+ * @Description: 自定义注解：监听MQ消息
  */
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface MQAnnotation {
+public @interface MQListener {
 
-    String value() default "";
+    String topic() default "";
+
+    String tag() default "";
 
 }
