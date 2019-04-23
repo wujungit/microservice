@@ -13,7 +13,7 @@ public enum ResultEnum {
     INVALID_PARAM(1001, "参数不合法"),
     DATA_NOT_FOUND(1002, "数据不存在"),
     DATA_HAS_EXISTS(1003, "数据已存在"),
-    ;
+    MQ_EXECUTE_ERROR(1004, "MQ执行失败");
 
     private Integer code;
     private String msg;

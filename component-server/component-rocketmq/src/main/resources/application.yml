@@ -4,7 +4,7 @@ server:
 apache:
   rocketmq:
     # NameServer地址
-    namesrvAddr: 192.168.0.52:9876
+    namesrvAddr: 127.0.0.1:9876
     # 生产者
     producer:
       producerGroup: producer
