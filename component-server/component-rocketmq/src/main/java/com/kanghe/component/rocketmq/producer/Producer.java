@@ -1,6 +1,7 @@
 package com.kanghe.component.rocketmq.producer;
 
 import com.kanghe.component.rocketmq.config.ProducerConfig;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component
+@Slf4j
 public class Producer {
 
     @Autowired
@@ -27,7 +29,7 @@ public class Producer {
         producer.setVipChannelEnabled(false);
         try {
             producer.start();
-            System.out.println("-------->:producer启动了");
+            log.info("execute defaultMQProducer(), producer start...");
         } catch (MQClientException e) {
             e.printStackTrace();
         }

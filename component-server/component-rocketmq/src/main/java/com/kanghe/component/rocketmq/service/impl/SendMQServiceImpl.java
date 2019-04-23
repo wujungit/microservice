@@ -3,6 +3,7 @@ package com.kanghe.component.rocketmq.service.impl;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
 import com.kanghe.component.rocketmq.service.ISendMQService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
@@ -20,6 +21,7 @@ import java.io.UnsupportedEncodingException;
  * @Description:
  */
 @Service
+@Slf4j
 public class SendMQServiceImpl implements ISendMQService {
 
     @Autowired
@@ -28,6 +30,7 @@ public class SendMQServiceImpl implements ISendMQService {
     @Override
     public String send(String topic, String tags, String body) {
         try {
+            log.info("execute send(): topic={},tags={},body={}", topic, tags, body);
             Message message = new Message(topic, tags, body.getBytes(RemotingHelper.DEFAULT_CHARSET));
             defaultMQProducer.send(message);
             return "SUCCEED";

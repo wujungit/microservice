@@ -3,6 +3,7 @@ package com.kanghe.component.rocketmq.consumer;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.config.ConsumerConfig;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @Description:
  */
 @Component
+@Slf4j
 public class Consumer implements CommandLineRunner {
 
     @Autowired
