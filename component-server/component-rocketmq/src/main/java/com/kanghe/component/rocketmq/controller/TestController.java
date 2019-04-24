@@ -26,9 +26,9 @@ public class TestController {
     }
 
     @MQListener(topic = "PushTopic", tag = "Push")
-    @GetMapping("/get")
-    public String getMsg() {
-        log.info("execute getMsg()");
+    @GetMapping("/pull")
+    public String pullMsg() {
+        log.info("execute pullMsg()");
         return "SUCCEED";
     }
 
