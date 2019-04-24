@@ -30,7 +30,7 @@ public class MQAspect {
     }
 
     @Around("annotationPointcut()")
-    public void pointcut(ProceedingJoinPoint joinPoint) throws Throwable {
+    public String pointcut(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("pointcut begin...");
         joinPoint.proceed();
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -40,6 +40,7 @@ public class MQAspect {
         String tag = annotation.tag();
         consumer.messageListener(topic, tag);
         log.info("pointcut end...");
+        return "SUCCEED";
     }
 
     @Before("annotationPointcut()")
