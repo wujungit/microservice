@@ -1,5 +1,7 @@
 package com.kanghe.component.rocketmq.annotation;
 
+import org.springframework.stereotype.Component;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,6 +12,7 @@ import java.lang.annotation.*;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Component
 public @interface MQListener {
 
     String topic() default "";
