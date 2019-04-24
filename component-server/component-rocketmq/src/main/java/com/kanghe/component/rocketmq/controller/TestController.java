@@ -17,15 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TestController {
 
+    private static final String TOPIC = "PushTopic";
+    private static final String TAG = "Push";
+
     @Autowired
     private ISendMQService sendMQService;
 
     @GetMapping("/push")
     public String pushMsg(@RequestParam String msg) {
-        return sendMQService.send("PushTopic", "Push", msg);
+        return sendMQService.send(TOPIC, TAG, msg);
     }
 
-    @MQListener(topic = "PushTopic", tag = "Push")
+    @MQListener(topic = TOPIC, tag = TAG)
     @GetMapping("/pull")
     public String pullMsg() {
         log.info("execute pullMsg()");
