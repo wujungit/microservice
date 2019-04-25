@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-public class TestController implements IHandleMQService {
+public class TestController {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";
@@ -33,17 +33,10 @@ public class TestController implements IHandleMQService {
     }
 
     @MQListener(topic = TOPIC, tag = TAG)
-    @Override
-    public void handle(Message msg) {
+    @GetMapping("/pull")
+    public void pullMsg() {
+        Message msg = handleMQService.handle();
         System.out.println("接收到了消息：" + new String(msg.getBody()));
     }
-
-//    @MQListener(topic = TOPIC, tag = TAG)
-//    @GetMapping("/pull")
-//    public String pullMsg() {
-//        log.info("execute pullMsg()");
-//        handleMQService.handle();
-//        return "SUCCEED";
-//    }
 
 }
