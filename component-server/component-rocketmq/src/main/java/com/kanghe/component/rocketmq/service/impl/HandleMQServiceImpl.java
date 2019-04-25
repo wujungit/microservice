@@ -24,7 +24,10 @@ public class HandleMQServiceImpl implements IHandleMQService {
     public Message handle() {
         try {
             ConcurrentLinkedQueue<Message> queue = MQ_CONTAINER.get("PushTopic");
-            return queue.peek();
+            if (null != queue && queue.size() > 0) {
+                return queue.peek();
+            }
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR.getCode(), ResultEnum.MQ_EXECUTE_ERROR.getMsg());

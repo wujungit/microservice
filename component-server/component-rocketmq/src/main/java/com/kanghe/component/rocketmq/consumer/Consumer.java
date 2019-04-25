@@ -1,8 +1,10 @@
 package com.kanghe.component.rocketmq.consumer;
 
+import com.alibaba.fastjson.JSON;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.config.ConsumerConfig;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -23,6 +25,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @Description:
  */
 @Component
+@Slf4j
 public class Consumer implements CommandLineRunner {
 
     private static final ConcurrentLinkedQueue<Message> MQ_QUEUE = new ConcurrentLinkedQueue<>();
@@ -33,6 +36,7 @@ public class Consumer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        log.info("CommandLineRunner run...");
         messageListener();
     }
 
@@ -55,9 +59,9 @@ public class Consumer implements CommandLineRunner {
                 for (Message msg : msgs) {
                     MQ_QUEUE.add(msg);
                     MQ_CONTAINER.put("PushTopic", MQ_QUEUE);
+                    log.info("MQ_CONTAINER: {}", JSON.toJSONString(MQ_CONTAINER));
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-
             });
             consumer.start();
         } catch (MQClientException e) {
