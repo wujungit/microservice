@@ -8,13 +8,13 @@ import org.apache.rocketmq.common.message.Message;
  * @Description:
  */
 @FunctionalInterface
-public interface HandleMQService {
+public interface IHandleMQService {
 
     /**
      * 处理MQ消息
      *
-     * @param msg Message
+     * @return Message
      */
-    public void handle(Message msg);
+    public Message handle();
 
 }

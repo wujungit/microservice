@@ -1,7 +1,7 @@
 package com.kanghe.component.rocketmq.controller;
 
 import com.kanghe.component.rocketmq.annotation.MQListener;
-import com.kanghe.component.rocketmq.service.HandleMQService;
+import com.kanghe.component.rocketmq.service.IHandleMQService;
 import com.kanghe.component.rocketmq.service.ISendMQService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.common.message.Message;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-public class TestController implements HandleMQService {
+public class TestController implements IHandleMQService {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";
@@ -25,7 +25,7 @@ public class TestController implements HandleMQService {
     @Autowired
     private ISendMQService sendMQService;
     @Autowired
-    private HandleMQService handleMQService;
+    private IHandleMQService handleMQService;
 
     @GetMapping("/push")
     public String pushMsg(@RequestParam String msg) {

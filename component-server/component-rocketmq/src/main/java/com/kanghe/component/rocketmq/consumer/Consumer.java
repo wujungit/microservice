@@ -3,7 +3,7 @@ package com.kanghe.component.rocketmq.consumer;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.config.ConsumerConfig;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
-import com.kanghe.component.rocketmq.service.HandleMQService;
+import com.kanghe.component.rocketmq.service.IHandleMQService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -24,13 +24,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Consumer {
 
-    private HandleMQService handleMQService;
+    private IHandleMQService handleMQService;
 
-    public HandleMQService getHandleMQService() {
+    public IHandleMQService getHandleMQService() {
         return handleMQService;
     }
 
-    public void setHandleMQService(HandleMQService handleMQService) {
+    public void setHandleMQService(IHandleMQService handleMQService) {
         this.handleMQService = handleMQService;
     }
 
