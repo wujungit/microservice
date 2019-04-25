@@ -7,7 +7,6 @@ import org.apache.rocketmq.common.message.Message;
  * @Date: 2019/4/25 10:28
  * @Description:
  */
-@FunctionalInterface
 public interface IHandleMQService {
 
     /**

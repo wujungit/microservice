@@ -1,13 +1,11 @@
 package com.kanghe.component.rocketmq.aspect;
 
 import com.kanghe.component.rocketmq.annotation.MQListener;
-import com.kanghe.component.rocketmq.consumer.Consumer;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -21,9 +19,6 @@ import java.lang.reflect.Method;
 @Aspect
 @Slf4j
 public class MQAspect {
-
-    @Autowired
-    private Consumer consumer;
 
     @Pointcut("@annotation(com.kanghe.component.rocketmq.annotation.MQListener)")
     public void annotationPointcut() {
