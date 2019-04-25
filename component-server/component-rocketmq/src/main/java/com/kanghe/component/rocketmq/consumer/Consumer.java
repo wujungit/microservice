@@ -3,6 +3,7 @@ package com.kanghe.component.rocketmq.consumer;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.config.ConsumerConfig;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
+import com.kanghe.component.rocketmq.service.HandleMQService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
@@ -12,7 +13,6 @@ import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.common.consumer.ConsumeFromWhere;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,15 +22,20 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class Consumer implements CommandLineRunner {
+public class Consumer {
+
+    private HandleMQService handleMQService;
+
+    public HandleMQService getHandleMQService() {
+        return handleMQService;
+    }
+
+    public void setHandleMQService(HandleMQService handleMQService) {
+        this.handleMQService = handleMQService;
+    }
 
     @Autowired
     private ConsumerConfig consumerConfig;
-
-    @Override
-    public void run(String... args) throws Exception {
-//        messageListener();
-    }
 
     public void messageListener(String topic, String tag) {
         if (StringUtils.isBlank(consumerConfig.getGroupName())) {
@@ -49,10 +54,9 @@ public class Consumer implements CommandLineRunner {
             consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
                 // 会把不同的消息分别放置到不同的队列中
                 for (Message msg : msgs) {
-                    System.out.println("接收到了消息：" + new String(msg.getBody()));
+                    handleMQService.handle(msg);
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-
             });
             consumer.start();
         } catch (MQClientException e) {

@@ -8,7 +8,7 @@ package com.kanghe.component.rocketmq.service;
 public interface ISendMQService {
 
     /**
-     * MQ发送消息
+     * 发送MQ消息
      *
      * @param topic 主题
      * @param tag   标签

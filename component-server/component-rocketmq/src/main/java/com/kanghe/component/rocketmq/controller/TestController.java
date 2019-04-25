@@ -1,8 +1,10 @@
 package com.kanghe.component.rocketmq.controller;
 
 import com.kanghe.component.rocketmq.annotation.MQListener;
+import com.kanghe.component.rocketmq.service.HandleMQService;
 import com.kanghe.component.rocketmq.service.ISendMQService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,13 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Slf4j
-public class TestController {
+public class TestController implements HandleMQService {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";
 
     @Autowired
     private ISendMQService sendMQService;
+    @Autowired
+    private HandleMQService handleMQService;
 
     @GetMapping("/push")
     public String pushMsg(@RequestParam String msg) {
@@ -29,10 +33,17 @@ public class TestController {
     }
 
     @MQListener(topic = TOPIC, tag = TAG)
-    @GetMapping("/pull")
-    public String pullMsg(String msg) {
-        log.info("execute pullMsg()");
-        return "SUCCEED";
+    @Override
+    public void handle(Message msg) {
+        System.out.println("接收到了消息：" + new String(msg.getBody()));
     }
+
+//    @MQListener(topic = TOPIC, tag = TAG)
+//    @GetMapping("/pull")
+//    public String pullMsg() {
+//        log.info("execute pullMsg()");
+//        handleMQService.handle();
+//        return "SUCCEED";
+//    }
 
 }
