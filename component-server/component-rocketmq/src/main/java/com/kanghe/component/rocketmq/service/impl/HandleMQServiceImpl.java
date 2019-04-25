@@ -18,6 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.kanghe.component.rocketmq.consumer.Consumer.MQ_CONTAINER;
 
 /**
  * @Author: W_jun1
@@ -34,26 +37,9 @@ public class HandleMQServiceImpl implements IHandleMQService {
     @Override
     public Message handle() {
         try {
-            if (StringUtils.isBlank(consumerConfig.getGroupName())) {
-                throw new RocketMQException(ResultEnum.INVALID_PARAM.getCode(), "groupName is blank");
-            }
-            if (StringUtils.isBlank(consumerConfig.getNamesrvAddr())) {
-                throw new RocketMQException(ResultEnum.INVALID_PARAM.getCode(), "namesrvAddr is blank");
-            }
-            DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(consumerConfig.getGroupName());
-            consumer.setNamesrvAddr(consumerConfig.getNamesrvAddr());
-            consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-            consumer.subscribe("PushTopic", "");
-
-            //在此监听中消费信息，并返回消费的状态信息
-            List<Message> list = new ArrayList<>();
-            consumer.registerMessageListener((MessageListenerConcurrently) (messages, consumeConcurrentlyContext) -> {
-                list.addAll(messages);
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-            });
-            log.info("list: {}", JSON.toJSONString(list));
-            return list.isEmpty() ? new Message() : list.get(0);
-        } catch (MQClientException e) {
+            ConcurrentLinkedQueue<Message> queue = MQ_CONTAINER.get("PushTopic");
+            queue.peek();
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR.getCode(), ResultEnum.MQ_EXECUTE_ERROR.getMsg());
         }
