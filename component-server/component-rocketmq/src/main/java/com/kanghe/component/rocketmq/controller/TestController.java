@@ -1,6 +1,5 @@
 package com.kanghe.component.rocketmq.controller;
 
-import com.kanghe.component.rocketmq.annotation.MQListener;
 import com.kanghe.component.rocketmq.service.IHandleMQService;
 import com.kanghe.component.rocketmq.service.ISendMQService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +31,7 @@ public class TestController {
         return sendMQService.send(TOPIC, TAG, msg);
     }
 
-    @MQListener(topic = TOPIC, tag = TAG)
+//    @MQListener(topic = TOPIC, tag = TAG)
     @GetMapping("/pull")
     public void pullMsg() {
         Message msg = handleMQService.handle();

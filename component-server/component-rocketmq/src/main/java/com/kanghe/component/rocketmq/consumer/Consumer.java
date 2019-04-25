@@ -1,6 +1,5 @@
 package com.kanghe.component.rocketmq.consumer;
 
-import com.alibaba.fastjson.JSON;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.rocketmq.config.ConsumerConfig;
 import com.kanghe.component.rocketmq.exception.RocketMQException;
@@ -16,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * @Author: W_jun1
  * @Date: 2019/4/15 16:02
@@ -27,9 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Component
 @Slf4j
 public class Consumer implements CommandLineRunner {
-
-    private static final ConcurrentLinkedQueue<Message> MQ_QUEUE = new ConcurrentLinkedQueue<>();
-    public static final ConcurrentHashMap<String, ConcurrentLinkedQueue<Message>> MQ_CONTAINER = new ConcurrentHashMap<>();
 
     @Autowired
     private ConsumerConfig consumerConfig;
@@ -52,16 +45,28 @@ public class Consumer implements CommandLineRunner {
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
 
         try {
+//            consumer.subscribe("PushTopic", "");
+//            //在此监听中消费信息，并返回消费的状态信息
+//            consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+//                // 会把不同的消息分别放置到不同的队列中
+//                for (Message msg : msgs) {
+//                    MQ_QUEUE.add(msg);
+//                }
+//                MQ_CONTAINER.put("PushTopic", MQ_QUEUE);
+//                log.info("MQ_CONTAINER: {}", JSON.toJSONString(MQ_CONTAINER));
+//                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+//            });
+//            consumer.start();
+
             consumer.subscribe("PushTopic", "");
             //在此监听中消费信息，并返回消费的状态信息
             consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
                 // 会把不同的消息分别放置到不同的队列中
                 for (Message msg : msgs) {
-                    MQ_QUEUE.add(msg);
-                    MQ_CONTAINER.put("PushTopic", MQ_QUEUE);
-                    log.info("MQ_CONTAINER: {}", JSON.toJSONString(MQ_CONTAINER));
+                    System.out.println("接收到了消息：" + new String(msg.getBody()));
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+
             });
             consumer.start();
         } catch (MQClientException e) {

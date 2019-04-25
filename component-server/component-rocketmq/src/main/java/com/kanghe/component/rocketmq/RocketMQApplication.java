@@ -2,7 +2,6 @@ package com.kanghe.component.rocketmq;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * @Author: W_jun1
@@ -10,7 +9,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @Description: Apache RocketMQ
  */
 @SpringBootApplication
-@EnableAspectJAutoProxy(exposeProxy = true)
 public class RocketMQApplication {
 
     public static void main(String[] args) {
