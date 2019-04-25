@@ -36,7 +36,12 @@ public class TestController {
     @GetMapping("/pull")
     public void pullMsg() {
         Message msg = handleMQService.handle();
-        System.out.println("接收到了消息：" + new String(msg.getBody()));
+        if (null != msg) {
+            byte[] body = msg.getBody();
+            if (null != body && body.length > 0) {
+                System.out.println("接收到了消息：" + new String(body));
+            }
+        }
     }
 
 }

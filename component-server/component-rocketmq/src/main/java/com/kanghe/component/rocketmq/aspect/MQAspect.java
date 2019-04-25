@@ -38,7 +38,7 @@ public class MQAspect {
         MQListener annotation = method.getAnnotation(MQListener.class);
         String topic = annotation.topic();
         String tag = annotation.tag();
-        consumer.messageListener(topic, tag);
+        log.info("MQListener param: topic={},tag={}", topic, tag);
         log.info("pointcut end...");
         return "SUCCEED";
     }
