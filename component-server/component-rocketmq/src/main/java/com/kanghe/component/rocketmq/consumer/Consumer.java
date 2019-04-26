@@ -15,7 +15,11 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Set;
 
@@ -40,7 +44,8 @@ public class Consumer implements CommandLineRunner {
     /**
      * 1、通过注册监听的方式来消费信息；
      */
-    private void messageListener() {
+    @Bean
+    private DefaultMQPushConsumer messageListener() {
         if (StringUtils.isBlank(consumerConfig.getGroupName())) {
             throw new RocketMQException(ResultEnum.INVALID_PARAM.getCode(), "groupName is blank");
         }
@@ -52,7 +57,7 @@ public class Consumer implements CommandLineRunner {
         consumer.setConsumerGroup(consumerConfig.getGroupName());
         try {
             // 订阅topic为"PushTopic",tag为"*"的消息
-            consumer.subscribe("PushTopic", "*");
+//            consumer.subscribe("PushTopic", "*");
             // 程序第一次启动从消息队列头获取数据
             consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
             // 在此监听消费信息，并返回消费的状态信息
@@ -60,7 +65,15 @@ public class Consumer implements CommandLineRunner {
                 // 会把不同的消息分别放置到不同的队列中（msgs中只收集同一个topic，同一个tag，并且key相同的message）
                 for (Message msg : msgs) {
                     // 业务处理
-                    System.out.println("接收到了消息：" + new String(msg.getBody()));
+                    byte[] body = msg.getBody();
+                    System.out.println("接收到了消息：" + new String(body));
+                    // spring5 WebClient
+                    Mono<String> resp = WebClient.create().post()
+                            .uri("http://127.0.0.1:8101/mq/pull")
+                            .contentType(MediaType.APPLICATION_JSON_UTF8)
+                            .body(Mono.just(msg), Message.class)
+                            .retrieve().bodyToMono(String.class);
+                    log.info("result: {}", resp.block());
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
@@ -72,6 +85,7 @@ public class Consumer implements CommandLineRunner {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR);
         }
+        return consumer;
     }
 
     /**
