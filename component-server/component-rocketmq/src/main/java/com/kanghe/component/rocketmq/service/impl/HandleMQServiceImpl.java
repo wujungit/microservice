@@ -14,7 +14,7 @@ import static com.kanghe.component.rocketmq.consumer.Consumer.MQ_CONTAINER;
 /**
  * @Author: W_jun1
  * @Date: 2019/4/25 11:02
- * @Description: 1、通过注册监听的方式来消费信息；2、通过拉取的方式来消费消息
+ * @Description:
  */
 @Service
 @Slf4j
