@@ -57,7 +57,7 @@ public class Consumer implements CommandLineRunner {
         consumer.setConsumerGroup(consumerConfig.getGroupName());
         try {
             // 订阅topic为"PushTopic",tag为"*"的消息
-//            consumer.subscribe("PushTopic", "*");
+            consumer.subscribe("PushTopic", "*");
             // 程序第一次启动从消息队列头获取数据
             consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
             // 在此监听消费信息，并返回消费的状态信息
@@ -78,10 +78,10 @@ public class Consumer implements CommandLineRunner {
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
             consumer.start();
-            Thread.sleep(5000);
-            //5秒后挂载消费端消费
-            consumer.suspend();
-        } catch (MQClientException | InterruptedException e) {
+//            Thread.sleep(5000);
+//            //5秒后挂载消费端消费
+//            consumer.suspend();
+        } catch (MQClientException e) {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR);
         }

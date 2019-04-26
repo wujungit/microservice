@@ -2,14 +2,10 @@ package com.kanghe.component.rocketmq.aspect;
 
 import com.kanghe.component.rocketmq.annotation.MQListener;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
-import org.apache.rocketmq.common.filter.FilterAPI;
-import org.apache.rocketmq.common.protocol.heartbeat.SubscriptionData;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -23,9 +19,6 @@ import java.lang.reflect.Method;
 @Aspect
 @Slf4j
 public class MQAspect {
-
-    @Autowired
-    private DefaultMQPushConsumer consumer;
 
     @Pointcut("@annotation(com.kanghe.component.rocketmq.annotation.MQListener)")
     public void annotationPointcut() {
@@ -41,7 +34,6 @@ public class MQAspect {
         String topic = annotation.topic();
         String tag = annotation.tag();
         log.info("MQListener param: topic={},tag={}", topic, tag);
-        consumer.subscribe(topic, tag);
         return "SUCCEED";
     }
 
