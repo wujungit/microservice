@@ -15,7 +15,6 @@ import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageQueue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -44,8 +43,7 @@ public class Consumer implements CommandLineRunner {
     /**
      * 1、通过注册监听的方式来消费信息；
      */
-    @Bean
-    private DefaultMQPushConsumer messageListener() {
+    private void messageListener() {
         if (StringUtils.isBlank(consumerConfig.getGroupName())) {
             throw new RocketMQException(ResultEnum.INVALID_PARAM.getCode(), "groupName is blank");
         }
@@ -66,7 +64,7 @@ public class Consumer implements CommandLineRunner {
                 for (Message msg : msgs) {
                     // 业务处理
                     byte[] body = msg.getBody();
-                    System.out.println("接收到了消息：" + new String(body));
+                    System.out.println("发送消息：" + new String(body));
                     // spring5 WebClient
                     Mono<String> resp = WebClient.create().post()
                             .uri("http://127.0.0.1:8101/mq/pull")
@@ -85,7 +83,6 @@ public class Consumer implements CommandLineRunner {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR);
         }
-        return consumer;
     }
 
     /**
