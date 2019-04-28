@@ -1,0 +1,12 @@
+server:
+  port: 8002
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+    prefer-ip-address: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://registerServer1:9010/eureka/,http://registerServer2:9010/eureka/
