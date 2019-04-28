@@ -34,7 +34,7 @@ public class TestController {
         if (null != msg) {
             byte[] body = msg.getBody();
             if (null != body && body.length > 0) {
-                System.out.println("接收到了消息：" + new String(body));
+                log.info("receive message: {}", new String(body));
                 return "SUCCEED";
             }
         }

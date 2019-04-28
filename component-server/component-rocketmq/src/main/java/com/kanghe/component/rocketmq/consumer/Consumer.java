@@ -64,7 +64,7 @@ public class Consumer implements CommandLineRunner {
                 for (Message msg : msgs) {
                     // 业务处理
                     byte[] body = msg.getBody();
-                    System.out.println("发送消息：" + new String(body));
+                    log.info("send message: {}", new String(body));
                     // spring5 WebClient
                     Mono<String> resp = WebClient.create().post()
                             .uri("http://127.0.0.1:8101/mq/pull")
@@ -76,10 +76,7 @@ public class Consumer implements CommandLineRunner {
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
             consumer.start();
-//            Thread.sleep(5000);
-//            //5秒后挂载消费端消费
-//            consumer.suspend();
-        } catch (MQClientException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RocketMQException(ResultEnum.MQ_EXECUTE_ERROR);
         }
