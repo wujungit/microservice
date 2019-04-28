@@ -20,9 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private static StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private RedisTemplate redisTemplate;
+    private static RedisTemplate redisTemplate;
+
+    public static void main(String[] args) {
+        String s = "字符串";
+        redisTemplate.opsForValue().set("T-STRING",s);
+    }
 
     @PostMapping("/pull")
     public String pullMsg(@RequestBody Object o) {
