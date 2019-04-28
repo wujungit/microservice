@@ -38,7 +38,7 @@
 * WebClient的请求模式属于异步非阻塞，能够以少量固定的线程处理高并发的HTTP请求
 ### 三、NoSQL数据库：Redis
 #### 1、StringRedisTemplate 操作k-v都是字符串的
-#### 2、RedisTemplate 操作k-v都是对象的
+#### 2、RedisTemplate 操作k-v都是对象的（字符串String、列表List、集合Set、散列Hash、有序集合ZSet）
 * 字符串：StringRedisTemplet.opsForValue()
 * 列表：StringRedisTemplet.opsForList() 
 * 集合：StringRedisTemplet.opsForSet()
