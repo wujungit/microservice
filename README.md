@@ -1,5 +1,22 @@
 # microservice
 ## 微服务架构
+* 在微服务架构中，需要几个基础的服务治理组件，
+  包括服务注册与发现、服务消费、负载均衡、断路器、智能路由、配置管理等，
+  由这几个基础组件相互协作，共同组建了一个简单的微服务系统。
+* 1.parent-dependencies-server（父级依赖服务，版本依赖管理）
+  2.register-eureka-server（服务注册）
+  3.passthrough-server（服务透传）
+  4.zuul-gateway-server（服务网管）
+  5.component-server（组件相关服务）
+  	component-common（项目DTO和VO）
+  	component-redis（缓存）
+  	component-utils（工具类）
+  6.business-core-service（业务层）
+  	core-pc-service（PC端）
+  	core-app-service（移动端）
+  7.service-xxxx-manager（基础层）
+  8.service-xxpay-manager（支付中心服务）
+  9.service-order-manager（订单服务）
 > 统一依赖管理
 > spring-boot
 > spring-cloud
@@ -7,7 +24,7 @@
 > 订单中心
 > 支付中心
 ## 技术点
-### 一、RocketMQ
+### 一、消息中间件：RocketMQ
 #### 1、Message 拉取与消费
 * PushConsumer 通过注册监听的方式来消费信息（常用），不断轮询Broker获取消息，长轮询
 * PullConsumer 通过拉取的方式来消费消息
@@ -19,6 +36,14 @@
 * 请求时同步阻塞，使用异步方式请求，可以使用AsyncRestTemplate
 * Spring5开始全面的引入了Reactive响应式编程，WebClient就属于Spring WebFlux的一部分
 * WebClient的请求模式属于异步非阻塞，能够以少量固定的线程处理高并发的HTTP请求
+### 三、NoSQL数据库：Redis
+#### 1、StringRedisTemplate 操作k-v都是字符串的
+#### 2、RedisTemplate 操作k-v都是对象的
+* 字符串：StringRedisTemplet.opsForValue()
+* 列表：StringRedisTemplet.opsForList() 
+* 集合：StringRedisTemplet.opsForSet()
+* 哈希：StringRedisTemplet.opsForHash()
+* 有序集合：StringRedisTemplet.opsForZSet()
 ### 统一异常处理
 ### 分页插件
 ### 封装组件（面向接口编程、自定义注解）
