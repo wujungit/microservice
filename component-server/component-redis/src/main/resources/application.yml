@@ -5,6 +5,8 @@ spring:
   redis:
     database: 0
     host: 127.0.0.1
+    port: 6379
+    password:
     jedis:
       pool:
         # 最大连接数据库连接数,设0为没有限制
@@ -22,5 +24,3 @@ spring:
         max-wait: -1ms
         min-idle: 0
       shutdown-timeout: 100ms
-    password: ''
-    port: 6379
