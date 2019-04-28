@@ -10,3 +10,10 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: http://registerServer1:9010/eureka/,http://registerServer2:9010/eureka/
+
+spring:
+  application:
+    name: service-order-manage
+
+logging:
+  file: ./log/${spring.application.name}.log
