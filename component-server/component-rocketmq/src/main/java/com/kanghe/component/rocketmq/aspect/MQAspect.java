@@ -28,18 +28,18 @@ public class MQAspect {
     public String pointcut(ProceedingJoinPoint joinPoint) throws Throwable {
         log.info("pointcut...");
         joinPoint.proceed();
-        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        Method method = methodSignature.getMethod();
-        MQListener annotation = method.getAnnotation(MQListener.class);
-        String topic = annotation.topic();
-        String tag = annotation.tag();
-        log.info("MQListener param: topic={},tag={}", topic, tag);
         return "SUCCEED";
     }
 
     @Before("annotationPointcut()")
     public void beforePointcut(JoinPoint joinPoint) {
         log.info("beforePointcut...");
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        Method method = methodSignature.getMethod();
+        MQListener annotation = method.getAnnotation(MQListener.class);
+        String topic = annotation.topic();
+        String tag = annotation.tag();
+        log.info("MQListener param: topic={},tag={}", topic, tag);
     }
 
     @After("annotationPointcut()")
