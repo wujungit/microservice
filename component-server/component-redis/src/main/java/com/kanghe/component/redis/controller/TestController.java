@@ -21,12 +21,13 @@ public class TestController {
 
     @Autowired
     private static StringRedisTemplate stringRedisTemplate;
+
     @Autowired
     private static RedisTemplate redisTemplate;
 
     public static void main(String[] args) {
         String s = "字符串";
-        stringRedisTemplate.opsForValue().set("T-STRING",s);
+        stringRedisTemplate.opsForValue().set("T-STRING", s);
     }
 
     @PostMapping("/pull")
