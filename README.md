@@ -39,11 +39,11 @@
 ### 三、NoSQL数据库：Redis
 #### 1、StringRedisTemplate 操作k-v都是字符串的
 #### 2、RedisTemplate 操作k-v都是对象的（字符串String、列表List、集合Set、散列Hash、有序集合ZSet）
-* 字符串：StringRedisTemplet.opsForValue()
-* 列表：StringRedisTemplet.opsForList() 
-* 集合：StringRedisTemplet.opsForSet()
-* 哈希：StringRedisTemplet.opsForHash()
-* 有序集合：StringRedisTemplet.opsForZSet()
+* 字符串：StringRedisTemplate.opsForValue()
+* 列表：RedisTemplate.opsForList() 
+* 集合：RedisTemplate.opsForSet()
+* 哈希：RedisTemplate.opsForHash()
+* 有序集合：RedisTemplate.opsForZSet()
 ### 统一异常处理
 ### 分页插件
 ### 封装组件（面向接口编程、自定义注解）
