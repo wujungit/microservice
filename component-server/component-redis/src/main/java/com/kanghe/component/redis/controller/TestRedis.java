@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  * @Date: 2019/4/28 14:04
  * @Description: 1、StringRedisTemplate：存取字符串类型的数据；
  * 2、redisTemplate：数据是复杂的对象类型，而取出的时候不用做任何的数据转换
- * 字符串String、列表List、散列Hash、集合Set、有序集合ZSet
+ * 3、字符串String、列表List、散列Hash、集合Set、有序集合ZSet
  */
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -33,7 +33,7 @@ public class TestRedis {
 
     @Test
     public void setString() {
-        stringRedisTemplate.opsForValue().set("T-STRING", "字符串", 6 * 10, TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set("T-STRING-01", "字符串", 6 * 10, TimeUnit.SECONDS);
         String value = stringRedisTemplate.opsForValue().get("T-STRING");
         log.info("key: {}, value: {}", "T-STRING", value);
     }

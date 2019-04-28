@@ -40,7 +40,8 @@ public class RedisConfig extends CachingConfigurerSupport {
         template.setKeySerializer(redisSerializer);
         //value序列化
         template.setValueSerializer(jackson2JsonRedisSerializer);
-        //value hashmap序列化
+        //value hashMap序列化
+        template.setHashKeySerializer(jackson2JsonRedisSerializer);
         template.setHashValueSerializer(jackson2JsonRedisSerializer);
         return template;
     }
