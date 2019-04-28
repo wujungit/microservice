@@ -39,12 +39,12 @@ public class MQAspect {
 
     @Before("annotationPointcut()")
     public void beforePointcut(JoinPoint joinPoint) {
-        log.info("准备...");
+        log.info("beforePointcut...");
     }
 
     @After("annotationPointcut()")
     public void afterPointcut(JoinPoint joinPoint) {
-        log.info("结束...");
+        log.info("afterPointcut...");
     }
 
 }

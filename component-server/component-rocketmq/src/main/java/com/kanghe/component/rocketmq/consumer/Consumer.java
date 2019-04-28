@@ -36,7 +36,7 @@ public class Consumer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("CommandLineRunner run...");
+        log.info("messageListener run...");
         messageListener();
     }
 
