@@ -9,7 +9,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
  * @Author: W_jun1
  * @Date: 2019/4/16 14:24
- * @Description: Apache RocketMQ
+ * @Description: service-pay-manage
  */
 @EnableEurekaClient
 @EnableSwagger2

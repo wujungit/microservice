@@ -52,5 +52,7 @@
 > 1、关联条件（on）和查询条件（where）对结果集的影响
 关联条件（on）：先查出符合条件的待关联表，再去关联主表，没有的将以null补全；
 查询条件（where）：对关联以后的结果集进行再筛选；
-> 2、springboot启动时，@ComponentScan扫描的时候，只扫描当前程序所在包结构（包含子包）中声明的组件
+> 2、spring-boot-maven-plugin
+能够将mvn package生成的软件包，再次打包为可执行的软件包，并将mvn package生成的软件包重命名为*.original
+> 3、springboot启动时，@ComponentScan扫描的时候，只扫描当前程序所在包结构（包含子包）中声明的组件
 
