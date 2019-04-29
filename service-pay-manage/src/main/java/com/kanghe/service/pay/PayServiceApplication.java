@@ -14,7 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableEurekaClient
 @EnableSwagger2
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.kanghe.component.common", "com.kanghe.component.rocketmq"})
+@ComponentScan(basePackages = {"com.kanghe.component.rocketmq"})
 public class PayServiceApplication {
 
     public static void main(String[] args) {
