@@ -11,15 +11,12 @@
 
     <artifactId>component-server</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>component-redis</module>
         <module>component-common</module>
         <module>component-api</module>
         <module>component-rocketmq</module>
     </modules>
-
-    <dependencies>
-        
-    </dependencies>
 
 </project>
