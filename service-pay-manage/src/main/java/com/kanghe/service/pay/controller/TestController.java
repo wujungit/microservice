@@ -1,8 +1,11 @@
 package com.kanghe.service.pay.controller;
 
 import com.kanghe.component.rocketmq.service.ISendMQService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description:
  */
 @RestController
+@RequestMapping(value = "/pay")
+@Slf4j
 public class TestController {
 
     private static final String TOPIC = "PushTopic";
@@ -20,7 +25,7 @@ public class TestController {
     @Autowired
     private ISendMQService sendMQService;
 
-    @GetMapping("/push")
+    @GetMapping(value =  "/push", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public String pushMsg(@RequestParam String msg) {
         return sendMQService.send(TOPIC, TAG, msg);
     }

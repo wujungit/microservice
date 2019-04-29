@@ -1,4 +1,3 @@
-
 server:
   port: 8011
 
@@ -15,10 +14,6 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: http://registerServer1:9010/eureka/,http://registerServer2:9010/eureka/
-
-ribbon:
-  ConnectTimeout: 30000
-  ReadTimeout: 120000
 
 logging:
   file: ./log/${spring.application.name}.log
@@ -42,3 +37,7 @@ feign:
   maxPeriod: 1000
   httpclient:
     enabled: false
+
+ribbon:
+  ConnectTimeout: 30000
+  ReadTimeout: 120000
