@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequestMapping(value = "/mq")
-public class TestController {
+public class TestMQController {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";

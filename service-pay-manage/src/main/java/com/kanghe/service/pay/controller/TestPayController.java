@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/pay")
 @Slf4j
-public class TestController {
+public class TestPayController {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";

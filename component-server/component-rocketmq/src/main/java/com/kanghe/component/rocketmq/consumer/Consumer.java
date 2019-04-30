@@ -67,7 +67,7 @@ public class Consumer implements CommandLineRunner {
                     log.info("send message: {}", new String(body));
                     // spring5 WebClient
                     Mono<String> resp = WebClient.create().post()
-                            .uri("http://127.0.0.1:8101/mq/pull")
+                            .uri("http://127.0.0.1:8002/order/pull")
                             .contentType(MediaType.APPLICATION_JSON_UTF8)
                             .body(Mono.just(msg), Message.class)
                             .retrieve().bodyToMono(String.class);

@@ -1,9 +1,9 @@
 package com.kanghe.service.order.controller;
 
-import com.kanghe.component.rocketmq.annotation.MQListener;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @Description:
  */
 @RestController
-public class TestController {
+@RequestMapping(value = "/order")
+public class TestOrderController {
 
     private static final String TOPIC = "PushTopic";
     private static final String TAG = "Push";
 
-    @MQListener(topic = TOPIC, tag = TAG)
+//    @MQListener(topic = TOPIC, tag = TAG)
     @PostMapping("/pull")
     public String pullMsg(@RequestBody Message msg) {
         if (null != msg) {
