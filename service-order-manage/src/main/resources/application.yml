@@ -15,13 +15,13 @@ spring:
   application:
     name: service-order-manage
 
-apache:
-  rocketmq:
-    namesrvAddr: 127.0.0.1:9876
-    producer:
-      producerGroup: producer
-    consumer:
-      comsumerGroup: comsumer
+#apache:
+#  rocketmq:
+#    namesrvAddr: 127.0.0.1:9876
+#    producer:
+#      producerGroup: producer
+#    consumer:
+#      comsumerGroup: comsumer
 
 logging:
   file: ./log/${spring.application.name}.log
