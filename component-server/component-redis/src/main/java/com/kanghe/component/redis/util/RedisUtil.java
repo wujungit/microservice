@@ -17,10 +17,19 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisUtil {
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private static RedisTemplate<String, Object> redisTemplate;
 
-    // =============================common============================
+    /**
+     * 静态变量/类变量不是对象的属性，而是一个类的属性，spring则是基于对象层面上的依赖注入
+     *
+     * @param redisTemplate
+     */
+    @Autowired
+    public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {
+        RedisUtil.redisTemplate = redisTemplate;
+    }
+
+// =============================common============================
 
     /**
      * 指定缓存失效时间
@@ -98,7 +107,7 @@ public class RedisUtil {
      * @param value 值
      * @return true成功 false失败
      */
-    public boolean set(String key, Object value) {
+    public static boolean set(String key, Object value) {
         try {
             redisTemplate.opsForValue().set(key, value);
             return true;

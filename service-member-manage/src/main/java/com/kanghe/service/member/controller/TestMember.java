@@ -4,7 +4,6 @@ import com.kanghe.component.redis.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -20,12 +19,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Slf4j
 public class TestMember {
 
-    @Autowired
-    private RedisUtil redisUtil;
+//    @Autowired
+//    private RedisUtil redisUtil;
 
     @Test
     public void setString() {
-        redisUtil.set("T-STRING", "123");
+        RedisUtil.set("T-STRING", "123");
     }
 
 }
