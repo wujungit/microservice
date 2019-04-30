@@ -26,19 +26,28 @@
 ## 技术点
 ### 一、消息中间件：RocketMQ
 #### 1、Message 拉取与消费
-* PushConsumer 通过注册监听的方式来消费信息（常用），不断轮询Broker获取消息，长轮询
-* PullConsumer 通过拉取的方式来消费消息
+* PushConsumer 通过注册监听的方式来消费信息（常用），不断轮询Broker获取消息，长轮询；
+* PullConsumer 通过拉取的方式来消费消息；
 #### 2、RocketMQ可靠一致性的MySQL落地实现
 * 上游系统，执行业务并发送指令给可靠消息服务并保留消息副本；
 * 可靠消息服务和MQ消息组件，协调上下游消息的传递，并确保上下游消息的一致性；
 * 下游系统，监听MQ的消息并执行自身业务并保留消息副本；
 ### 二、RestTemplate和WebClient
-* 请求时同步阻塞，使用异步方式请求，可以使用AsyncRestTemplate
-* Spring5开始全面的引入了Reactive响应式编程，WebClient就属于Spring WebFlux的一部分
-* WebClient的请求模式属于异步非阻塞，能够以少量固定的线程处理高并发的HTTP请求
+* 请求时同步阻塞，使用异步方式请求，可以使用AsyncRestTemplate；
+* Spring5开始全面的引入了Reactive响应式编程，WebClient就属于Spring WebFlux的一部分；
+* WebClient的请求模式属于异步非阻塞，能够以少量固定的线程处理高并发的HTTP请求；
 ### 三、NoSQL数据库：Redis
-#### 1、StringRedisTemplate 操作k-v都是字符串的
-#### 2、RedisTemplate 操作k-v都是对象的（字符串String、列表List、集合Set、散列Hash、有序集合ZSet）
+#### 1、数据库的原理
+* redis作为缓存的作用就是减少对数据库的访问压力;
+* 主要是：支持持久化、支持更多数据结构、支持主从同步；
+* 缓存同步的原理：就是将redis中的key进行删除，下次访问的时候，redis中没有该数据，则从DB进行查询，再次更新到redis中；
+#### 2、使用场景
+* 使用Redis来解决邮箱激活的实效性；
+  用户在注册的时候，虽然正则表达式能检查邮箱的格式是否正确，但是正则检查不了邮箱是否可用，于是让用户进行激活，就能避免用户填写一个不可用的邮箱；
+* 快速登陆，短信验证码的校验；
+#### 3、API
+* StringRedisTemplate 操作k-v都是字符串的；
+* RedisTemplate 操作k-v都是对象的（字符串String、列表List、集合Set、散列Hash、有序集合ZSet）；
 * 字符串：StringRedisTemplate.opsForValue()
 * 列表：RedisTemplate.opsForList() 
 * 集合：RedisTemplate.opsForSet()
