@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private static RedisTemplate<String, Object> redisTemplate;
 
     // =============================common============================
 
@@ -29,7 +29,7 @@ public class RedisUtil {
      * @param time 时间(秒)
      * @return
      */
-    public boolean expire(String key, long time) {
+    public static boolean expire(String key, long time) {
         try {
             if (time > 0) {
                 redisTemplate.expire(key, time, TimeUnit.SECONDS);
@@ -362,8 +362,9 @@ public class RedisUtil {
     public long sSetAndTime(String key, long time, Object... values) {
         try {
             Long count = redisTemplate.opsForSet().add(key, values);
-            if (time > 0)
+            if (time > 0) {
                 expire(key, time);
+            }
             return count;
         } catch (Exception e) {
             e.printStackTrace();

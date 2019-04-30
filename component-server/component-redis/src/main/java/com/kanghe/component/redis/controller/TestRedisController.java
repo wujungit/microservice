@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequestMapping(value = "/test")
-public class TestController {
+public class TestRedisController {
 
     @PostMapping("/pull")
     public String pullMsg(@RequestBody Object o) {
