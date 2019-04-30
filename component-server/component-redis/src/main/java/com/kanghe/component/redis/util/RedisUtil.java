@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
 
     @Autowired
-    private static RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     // =============================common============================
 
@@ -29,7 +29,7 @@ public class RedisUtil {
      * @param time 时间(秒)
      * @return
      */
-    public static boolean expire(String key, long time) {
+    public boolean expire(String key, long time) {
         try {
             if (time > 0) {
                 redisTemplate.expire(key, time, TimeUnit.SECONDS);
@@ -71,7 +71,6 @@ public class RedisUtil {
      *
      * @param key 可以传一个值 或多个
      */
-    @SuppressWarnings("unchecked")
     public void del(String... key) {
         if (key != null && key.length > 0) {
             if (key.length == 1) {
@@ -79,6 +78,7 @@ public class RedisUtil {
             }
         }
     }
+
     // ============================String=============================
 
     /**
@@ -157,6 +157,7 @@ public class RedisUtil {
         }
         return redisTemplate.opsForValue().increment(key, -delta);
     }
+
     // ================================Map=================================
 
     /**
@@ -302,6 +303,7 @@ public class RedisUtil {
     public double hdecr(String key, String item, double by) {
         return redisTemplate.opsForHash().increment(key, item, -by);
     }
+
     // ============================set=============================
 
     /**
@@ -403,6 +405,7 @@ public class RedisUtil {
             return 0;
         }
     }
+
     // ===============================list=================================
 
     /**
