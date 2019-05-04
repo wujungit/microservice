@@ -57,6 +57,17 @@
 * 集合：RedisTemplate.opsForSet()
 * 哈希：RedisTemplate.opsForHash()
 * 有序集合：RedisTemplate.opsForZSet()
+### 四、Docker
+#### 1、核心概念
+* 一个开源的应用容器引擎；
+* 支持将软件编译成一个镜像，然后在镜像中各种软件做好配置，将镜像发布出去，其他使用者可以直接使用这个镜像；
+* 运行中的这个镜像成为容器，容器启动是非常快的；
+* docker主机（host）：安装docker程序的机器（docker直接安装在操作系统上）；
+* docker客户端（client）：连接docker主机进行操作；
+* docker仓库（registry）：用来保存各种打包好的软件镜像；
+* docker镜像（images）：软件打包好的镜像，放在docker仓库中；
+* docker容器（container）：镜像启动后的实例称为一个容器；
+#### 
 ### SQL优化
 * 负向条件查询不能使用索引（!=/not in/not exists）,可以优化为in查询；
 * 前导模糊查询不能使用索引（like '%XX'）,非前导模糊查询则可以（like 'XX%'）；
