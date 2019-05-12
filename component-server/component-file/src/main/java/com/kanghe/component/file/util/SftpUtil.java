@@ -14,7 +14,7 @@ import java.util.Vector;
 /**
  * @Author: W_jun1
  * @Date: 2019/5/11 22:18
- * @Description: SFTPUtil
+ * @Description: SftpUtil
  **/
 @Component
 @Slf4j
@@ -24,25 +24,23 @@ public class SftpUtil {
     private static final int port = 22;
     private static final String username = "root";
     private static final String password = "root";
-    public static final String directory = "/home";
-
+    private static final String directory = "/home";
     private static ChannelSftp sftp;
-
-    private static SftpUtil instance = null;
+    private static SftpUtil sftpUtil = null;
 
     private SftpUtil() {
     }
 
     public static SftpUtil getInstance() {
-        if (instance == null) {
+        if (sftpUtil == null) {
             synchronized (SftpUtil.class) {
-                if (instance == null) {
-                    instance = new SftpUtil();
-                    sftp = instance.connect(host, port, username, password);   //获取连接
+                if (sftpUtil == null) {
+                    sftpUtil = new SftpUtil();
+                    sftp = sftpUtil.connect(host, port, username, password);   //获取连接
                 }
             }
         }
-        return instance;
+        return sftpUtil;
     }
 
     /**
@@ -54,7 +52,7 @@ public class SftpUtil {
      * @param password 密码
      * @return
      */
-    public ChannelSftp connect(String host, int port, String username, String password) {
+    private ChannelSftp connect(String host, int port, String username, String password) {
         ChannelSftp sftp = null;
         try {
             JSch jsch = new JSch();
