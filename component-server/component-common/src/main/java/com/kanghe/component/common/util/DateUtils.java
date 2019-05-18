@@ -13,6 +13,11 @@ import java.util.Date;
  */
 public class DateUtils {
 
+    public static String getCurrentTimeStr(String pattern) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        return dateFormat.format(new Date());
+    }
+
     /**
      * 将长时间格式字符串转换为时间 yyyy-MM-dd HH:mm:ss
      */

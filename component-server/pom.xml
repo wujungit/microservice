@@ -17,7 +17,6 @@
         <module>component-common</module>
         <module>component-api</module>
         <module>component-rocketmq</module>
-        <module>component-file</module>
     </modules>
 
 </project>

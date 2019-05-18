@@ -29,6 +29,7 @@
         <module>service-pay-manage</module>
         <module>component-server</module>
         <module>service-member-manage</module>
+        <module>service-file-manage</module>
     </modules>
 
     <!--版本管理-->

@@ -1,0 +1,124 @@
+package com.kanghe.service.file.util;
+
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.BaseObjectPool;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @Author: W_jun1
+ * @Date: 2019/5/18 23:09
+ * @Description: Sftp连接池
+ **/
+@Component
+@Slf4j
+public class SftpPool extends BaseObjectPool<ChannelSftp> {
+
+    private static final int DEFAULT_POOL_SIZE = 8;
+    private static final int DEFAULT_POOL_INIT_SIZE = 3;
+
+    private SftpFactory sftpFactory;
+    private ArrayBlockingQueue<ChannelSftp> sftpDeque;
+
+    public SftpPool(SftpFactory factory) throws Exception {
+        this.sftpFactory = factory;
+        this.sftpDeque = new ArrayBlockingQueue<>(DEFAULT_POOL_SIZE);
+        initPool();
+    }
+
+    /**
+     * 初始化连接池
+     *
+     * @throws Exception
+     */
+    private void initPool() throws Exception {
+        for (int i = 0; i < DEFAULT_POOL_INIT_SIZE; i++) {
+            addObject();
+        }
+    }
+
+    /**
+     * 从连接池中获取对象
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public ChannelSftp borrowObject() throws Exception {
+        ChannelSftp sftp = sftpDeque.take();
+        if (ObjectUtils.isEmpty(sftp)) {
+            sftp = sftpFactory.create();
+            returnObject(sftp);
+        } else if (sftpFactory.validateObject(sftpFactory.wrap(sftp))) {
+            invalidateObject(sftp);
+            sftp = sftpFactory.create();
+            returnObject(sftp);
+        }
+        return sftp;
+    }
+
+    /**
+     * 返还对象到连接池中
+     *
+     * @param sftp
+     * @throws Exception
+     */
+    @Override
+    public void returnObject(ChannelSftp sftp) {
+        try {
+            if (sftp != null && !sftpDeque.offer(sftp, 3, TimeUnit.SECONDS)) {
+                sftpFactory.destroyObject(sftpFactory.wrap(sftp));
+            }
+        } catch (InterruptedException | JSchException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 移除无效的对象
+     *
+     * @param sftp
+     */
+    @Override
+    public void invalidateObject(ChannelSftp sftp) {
+        try {
+            sftp.cd("/");
+        } catch (SftpException e) {
+            e.printStackTrace();
+        } finally {
+            sftpDeque.remove(sftp);
+        }
+    }
+
+    /**
+     * 加入一个对象
+     *
+     * @throws Exception
+     */
+    @Override
+    public void addObject() throws Exception {
+        sftpDeque.offer(sftpFactory.create(), 3, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 关闭连接池
+     */
+    @Override
+    public void close() {
+        try {
+            while (sftpDeque.iterator().hasNext()) {
+                ChannelSftp sftp = sftpDeque.take();
+                sftpFactory.destroyObject(sftpFactory.wrap(sftp));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("close channelSftpDeque failed...{}", e);
+        }
+    }
+}

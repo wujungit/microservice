@@ -88,6 +88,22 @@ public class BaseResult<T extends Object> implements Serializable {
         this.content = content;
     }
 
+    public static BaseResult buildSuccess(String message, Object data) {
+        return build(Boolean.TRUE, message, data);
+    }
+
+    public static BaseResult buildFailure(String message, Object data) {
+        return build(Boolean.FALSE, message, data);
+    }
+
+    public static BaseResult build(Boolean success, String msg, Object data) {
+        return build(success, msg, 0, data);
+    }
+
+    public static BaseResult build(Boolean success, String message, Integer code, Object data) {
+        return new BaseResult<>(success, data, code, message);
+    }
+
     public Boolean getSuccess() {
         return success;
     }
