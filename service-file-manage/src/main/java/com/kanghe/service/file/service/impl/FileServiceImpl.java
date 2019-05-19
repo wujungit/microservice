@@ -1,5 +1,6 @@
 package com.kanghe.service.file.service.impl;
 
+import com.jcraft.jsch.ChannelSftp;
 import com.kanghe.component.common.dto.file.dto.FileDTO;
 import com.kanghe.component.common.dto.file.dto.UploadFileBatchDTO;
 import com.kanghe.component.common.dto.file.dto.UploadFileDTO;
@@ -14,6 +15,7 @@ import com.kanghe.service.file.enums.DataTypeEnum;
 import com.kanghe.service.file.enums.FileTypeEnum;
 import com.kanghe.service.file.mapper.FileInfoMapper;
 import com.kanghe.service.file.service.IFileService;
+import com.kanghe.service.file.util.SftpPool;
 import com.kanghe.service.file.util.SftpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -50,6 +52,8 @@ public class FileServiceImpl implements IFileService {
     @Autowired
     private FileInfoMapper fileInfoMapper;
     @Autowired
+    private SftpPool sftpPool;
+    @Autowired
     private SftpUtil sftpUtil;
 
     @Override
@@ -67,6 +71,7 @@ public class FileServiceImpl implements IFileService {
 
     @Override
     public List<FileInfoVO> uploadFileBatch(UploadFileBatchDTO dto) {
+        ChannelSftp sftp = null;
         try {
             List<FileDTO> fileDTOList = dto.getFileDTOList();
             String operator = dto.getOperator();
@@ -88,6 +93,8 @@ public class FileServiceImpl implements IFileService {
             log.info("获取文件字节数据: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
             List<FileInfoVO> result = new ArrayList<>();
             List<FileInfo> list = new ArrayList<>();
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
             for (FileDTO fileDTO : fileDTOList) {
                 Integer dataType = fileDTO.getDataType();
                 byte[] bytes = fileDTO.getBytes();
@@ -113,13 +120,13 @@ public class FileServiceImpl implements IFileService {
                 String relativePath = relativeDir + "/" + fileName;
                 String absolutePath = absoluteDir + "/" + fileName;
                 // 创建文件目录
-                Boolean makeDir = sftpUtil.makeDirectory(relativeDir);
+                Boolean makeDir = sftpUtil.makeDirectory(sftp, relativeDir);
                 if (!makeDir) {
                     throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "创建文件目录失败");
                 }
                 // 上传文件
                 log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-                boolean upload = sftpUtil.upload(relativeDir, bytes, fileName);
+                boolean upload = sftpUtil.upload(sftp, relativeDir, bytes, fileName);
                 log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
                 if (!upload) {
                     throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败");
@@ -146,14 +153,13 @@ public class FileServiceImpl implements IFileService {
             }
             return result;
         } finally {
-            if (sftpUtil != null) {
-                sftpUtil.returnSftp();
-            }
+            sftpUtil.returnSftp(sftp);
         }
     }
 
     @Override
     public FileInfoVO uploadFile(UploadFileDTO dto) {
+        ChannelSftp sftp = null;
         try {
             Integer dataType = dto.getDataType();
             byte[] bytes = dto.getBytes();
@@ -186,15 +192,17 @@ public class FileServiceImpl implements IFileService {
             String absoluteDir = baseAbsoluteDir + uploadDir;
             String relativePath = relativeDir + "/" + fileName;
             String absolutePath = absoluteDir + "/" + fileName;
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
             // 创建文件目录
             log.info("relativeDir={}", relativeDir);
-            Boolean makeDir = sftpUtil.makeDirectory(relativeDir);
+            Boolean makeDir = sftpUtil.makeDirectory(sftp, relativeDir);
             if (!makeDir) {
                 throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "创建文件目录失败");
             }
             // 上传文件
             log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            boolean upload = sftpUtil.upload(relativeDir, bytes, fileName);
+            boolean upload = sftpUtil.upload(sftp, relativeDir, bytes, fileName);
             log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
             if (!upload) {
                 throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败");
@@ -216,9 +224,7 @@ public class FileServiceImpl implements IFileService {
             fileInfoMapper.insertSelective(fileInfo);
             return getFileInfoVO(fileInfo);
         } finally {
-            if (sftpUtil != null) {
-                sftpUtil.returnSftp();
-            }
+            sftpUtil.returnSftp(sftp);
         }
     }
 
@@ -275,6 +281,7 @@ public class FileServiceImpl implements IFileService {
 
     @Override
     public FileInfoVO downloadFile(String fileCode, String directory) {
+        ChannelSftp sftp = null;
         try {
             // 参数校验
             if (StringUtils.isBlank(fileCode)) {
@@ -291,20 +298,21 @@ public class FileServiceImpl implements IFileService {
             String relativePath = existFileInfo.getRelativePath();
             String fileRealName = existFileInfo.getFileRealName();
             String saveFile = directory + "/" + fileRealName;
-            Boolean download = sftpUtil.download(relativePath, saveFile);
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
+            Boolean download = sftpUtil.download(sftp, relativePath, saveFile);
             if (!download) {
                 throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败");
             }
             return getFileInfoVO(existFileInfo);
         } finally {
-            if (sftpUtil != null) {
-                sftpUtil.returnSftp();
-            }
+            sftpUtil.returnSftp(sftp);
         }
     }
 
     @Override
     public List<FileInfoVO> downloadFileBatch(List<String> fileCodes, String directory) {
+        ChannelSftp sftp = null;
         try {
             // 参数校验
             if (null == fileCodes || fileCodes.size() == 0) {
@@ -318,12 +326,14 @@ public class FileServiceImpl implements IFileService {
             if (null == fileInfos || fileInfos.size() == 0) {
                 throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "批量下载文件失败：文件不存在");
             }
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
             List<FileInfoVO> result = new ArrayList<>();
             for (FileInfo fileInfo : fileInfos) {
                 String relativePath = fileInfo.getRelativePath();
                 String fileRealName = fileInfo.getFileRealName();
                 String saveFile = directory + "/" + fileRealName;
-                Boolean download = sftpUtil.download(relativePath, saveFile);
+                Boolean download = sftpUtil.download(sftp, relativePath, saveFile);
                 if (!download) {
                     throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败");
                 }
@@ -331,14 +341,13 @@ public class FileServiceImpl implements IFileService {
             }
             return result;
         } finally {
-            if (sftpUtil != null) {
-                sftpUtil.returnSftp();
-            }
+            sftpUtil.returnSftp(sftp);
         }
     }
 
     @Override
     public Boolean deleteFile(String fileCode) {
+        ChannelSftp sftp = null;
         try {
             // 参数校验
             if (StringUtils.isBlank(fileCode)) {
@@ -351,7 +360,9 @@ public class FileServiceImpl implements IFileService {
             }
             String relativePath = existFileInfo.getRelativePath();
             String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
-            boolean delete = sftpUtil.delete(directory, existFileInfo.getFileName());
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
+            boolean delete = sftpUtil.delete(sftp, directory, existFileInfo.getFileName());
             if (!delete) {
                 throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败");
             }
@@ -359,14 +370,13 @@ public class FileServiceImpl implements IFileService {
             fileInfoMapper.logicDelete(existFileInfo.getCode());
             return Boolean.TRUE;
         } finally {
-            if (sftpUtil != null) {
-                sftpUtil.returnSftp();
-            }
+            sftpUtil.returnSftp(sftp);
         }
     }
 
     @Override
     public Boolean deleteFileBatch(List<String> fileCodes) {
+        ChannelSftp sftp = null;
         try {
             // 参数校验
             if (null == fileCodes || fileCodes.size() == 0) {
@@ -377,10 +387,12 @@ public class FileServiceImpl implements IFileService {
             if (null == fileInfos || fileInfos.size() == 0) {
                 throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "删除失败：文件不存在");
             }
+            // 获取Sftp连接
+            sftp = sftpPool.borrowObject();
             for (FileInfo fileInfo : fileInfos) {
                 String relativePath = fileInfo.getRelativePath();
                 String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
-                boolean delete = sftpUtil.delete(directory, fileInfo.getFileName());
+                boolean delete = sftpUtil.delete(sftp, directory, fileInfo.getFileName());
                 if (!delete) {
                     throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败");
                 }
@@ -389,7 +401,7 @@ public class FileServiceImpl implements IFileService {
             }
             return Boolean.TRUE;
         } finally {
-            sftpUtil.returnSftp();
+            sftpUtil.returnSftp(sftp);
         }
     }
 

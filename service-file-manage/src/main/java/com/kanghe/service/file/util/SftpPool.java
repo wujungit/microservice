@@ -3,11 +3,15 @@ package com.kanghe.service.file.util;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
+import com.kanghe.component.common.enums.ResultEnum;
+import com.kanghe.component.common.exception.BuzException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.BaseObjectPool;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -23,13 +27,13 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
     private static final int DEFAULT_POOL_SIZE = 8;
     private static final int DEFAULT_POOL_INIT_SIZE = 3;
 
+    @Autowired
     private SftpFactory sftpFactory;
+
     private ArrayBlockingQueue<ChannelSftp> sftpDeque;
 
-    public SftpPool(SftpFactory factory) throws Exception {
-        this.sftpFactory = factory;
+    public SftpPool() {
         this.sftpDeque = new ArrayBlockingQueue<>(DEFAULT_POOL_SIZE);
-        initPool();
     }
 
     /**
@@ -37,6 +41,7 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      *
      * @throws Exception
      */
+    @PostConstruct
     private void initPool() throws Exception {
         for (int i = 0; i < DEFAULT_POOL_INIT_SIZE; i++) {
             addObject();
@@ -50,17 +55,22 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      * @throws Exception
      */
     @Override
-    public ChannelSftp borrowObject() throws Exception {
-        ChannelSftp sftp = sftpDeque.take();
-        if (ObjectUtils.isEmpty(sftp)) {
-            sftp = sftpFactory.create();
-            returnObject(sftp);
-        } else if (sftpFactory.validateObject(sftpFactory.wrap(sftp))) {
-            invalidateObject(sftp);
-            sftp = sftpFactory.create();
-            returnObject(sftp);
+    public ChannelSftp borrowObject() {
+        try {
+            ChannelSftp sftp = sftpDeque.take();
+            if (ObjectUtils.isEmpty(sftp)) {
+                sftp = sftpFactory.create();
+                returnObject(sftp);
+            } else if (!sftpFactory.validateObject(sftpFactory.wrap(sftp))) {
+                invalidateObject(sftp);
+                sftp = sftpFactory.create();
+                returnObject(sftp);
+            }
+            return sftp;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
         }
-        return sftp;
     }
 
     /**

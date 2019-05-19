@@ -20,18 +20,18 @@ public class SftpUtil {
     @Autowired
     private SftpPool pool;
 
-    private ChannelSftp sftp;
-
-    public SftpUtil() throws Exception {
-        this.sftp = borrowSftp();
+    private SftpUtil() {
     }
 
-    private ChannelSftp borrowSftp() throws Exception {
-        return pool.borrowObject();
-    }
-
-    public void returnSftp() {
-        pool.returnObject(sftp);
+    /**
+     * 返还Sftp连接
+     */
+    public void returnSftp(ChannelSftp sftp) {
+        try {
+            pool.returnObject(sftp);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -42,7 +42,7 @@ public class SftpUtil {
      * @param fileName  文件保存名称
      * @return
      */
-    public boolean upload(String directory, byte[] bytes, String fileName) {
+    public boolean upload(ChannelSftp sftp, String directory, byte[] bytes, String fileName) {
         InputStream inputStream = null;
         try {
             sftp.cd(directory);
@@ -71,9 +71,10 @@ public class SftpUtil {
      * @param directory
      * @return Boolean
      */
-    public Boolean makeDirectory(String directory) {
+    public Boolean makeDirectory(ChannelSftp sftp, String directory) {
         try {
-            if (isDirExist(directory)) {
+            if (isDirExist(sftp, directory)) {
+                log.info("sftp: {}", sftp);
                 sftp.cd(directory);
                 return true;
             }
@@ -84,7 +85,7 @@ public class SftpUtil {
                     continue;
                 }
                 filePath.append(path).append("/");
-                if (isDirExist(filePath.toString())) {
+                if (isDirExist(sftp, filePath.toString())) {
                     sftp.cd(filePath.toString());
                 } else {
                     // 建立目录
@@ -107,7 +108,7 @@ public class SftpUtil {
      * @param directory
      * @return
      */
-    public boolean isDirExist(String directory) {
+    public boolean isDirExist(ChannelSftp sftp, String directory) {
         boolean isDirExistFlag = false;
         try {
             SftpATTRS sftpATTRS = sftp.lstat(directory);
@@ -127,7 +128,7 @@ public class SftpUtil {
      * @param downloadFilePath 下载的文件完整目录
      * @param saveFile         存在本地的路径
      */
-    public Boolean download(String downloadFilePath, String saveFile) {
+    public Boolean download(ChannelSftp sftp, String downloadFilePath, String saveFile) {
         try {
             int i = downloadFilePath.lastIndexOf("/");
             if (i == -1) {
@@ -152,7 +153,7 @@ public class SftpUtil {
      * @param directory  要删除文件所在目录
      * @param deleteFile 要删除的文件
      */
-    public boolean delete(String directory, String deleteFile) {
+    public boolean delete(ChannelSftp sftp, String directory, String deleteFile) {
         try {
             sftp.cd(directory);
             sftp.rm(deleteFile);
