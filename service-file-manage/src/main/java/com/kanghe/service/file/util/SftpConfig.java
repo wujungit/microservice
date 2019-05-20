@@ -1,27 +1,27 @@
 package com.kanghe.service.file.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * @Author: W_jun1
  * @Date: 2019/5/15 17:50
  * @Description: Sftp配置
  */
-@Configuration
-@PropertySource(value = "classpath:config/sftp.properties", encoding = "UTF-8")
+@Component
+@Getter
 public class SftpConfig {
 
-    @Autowired
-    public SftpConfig(Environment env) {
-        SftpConfig.environment = env;
-    }
+    @Value("${file.sftp.host}")
+    private String host;
 
-    private static Environment environment;
+    @Value("${file.sftp.port}")
+    private String port;
 
-    public static String get(String key) {
-        return environment.getProperty(key);
-    }
+    @Value("${file.sftp.username}")
+    private String username;
+
+    @Value("${file.sftp.password}")
+    private String password;
 }

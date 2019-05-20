@@ -147,11 +147,7 @@ public class FileServiceImpl implements IFileService {
             return result;
         } finally {
             if (sftpUtil != null) {
-                try {
-                    sftpUtil.returnSftp();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sftpUtil.returnSftp();
             }
         }
     }
@@ -221,11 +217,7 @@ public class FileServiceImpl implements IFileService {
             return getFileInfoVO(fileInfo);
         } finally {
             if (sftpUtil != null) {
-                try {
-                    sftpUtil.returnSftp();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sftpUtil.returnSftp();
             }
         }
     }
@@ -306,11 +298,7 @@ public class FileServiceImpl implements IFileService {
             return getFileInfoVO(existFileInfo);
         } finally {
             if (sftpUtil != null) {
-                try {
-                    sftpUtil.returnSftp();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sftpUtil.returnSftp();
             }
         }
     }
@@ -344,11 +332,7 @@ public class FileServiceImpl implements IFileService {
             return result;
         } finally {
             if (sftpUtil != null) {
-                try {
-                    sftpUtil.returnSftp();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sftpUtil.returnSftp();
             }
         }
     }
@@ -376,11 +360,7 @@ public class FileServiceImpl implements IFileService {
             return Boolean.TRUE;
         } finally {
             if (sftpUtil != null) {
-                try {
-                    sftpUtil.returnSftp();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                sftpUtil.returnSftp();
             }
         }
     }
@@ -409,11 +389,7 @@ public class FileServiceImpl implements IFileService {
             }
             return Boolean.TRUE;
         } finally {
-            try {
-                sftpUtil.returnSftp();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            sftpUtil.returnSftp();
         }
     }
 

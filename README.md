@@ -17,6 +17,7 @@
   7.service-xxxx-manager（基础层）
   8.service-xxpay-manager（支付中心服务）
   9.service-order-manager（订单服务）
+  10.service-file-manage(文件服务)
 > 统一依赖管理
 > spring-boot
 > spring-cloud
@@ -72,6 +73,10 @@
 * docker镜像（images）：软件打包好的镜像，放在docker仓库中；
 * docker容器（container）：镜像启动后的实例称为一个容器；
 ### 六、SQL优化
+### 五、文件服务
+* 基于SFTP的文件服务，使用commons-pool2实现SFTP连接池
+* PooledObject(池化对象) PooledObjectFactory(对象工厂) ObjectPool (对象池)
+### SQL优化
 * 负向条件查询不能使用索引（!=/not in/not exists）,可以优化为in查询；
 * 前导模糊查询不能使用索引（like '%XX'）,非前导模糊查询则可以（like 'XX%'）；
 * 数据区分度不大的字段不宜使用索引（经验值80%），例如性别（男/女）不易使用索引；

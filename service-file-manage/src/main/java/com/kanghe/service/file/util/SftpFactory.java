@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.util.Properties;
 
 /**
@@ -12,13 +15,12 @@ import java.util.Properties;
  * @Date: 2019/5/18 22:50
  * @Description: Sftp工厂
  **/
+@Component
 @Slf4j
 public class SftpFactory extends BasePooledObjectFactory<ChannelSftp> {
 
-    private static String host = SftpConfig.get("sftp.host");
-    private static int port = Integer.parseInt(SftpConfig.get("sftp.port"));
-    private static String username = SftpConfig.get("sftp.username");
-    private static String password = SftpConfig.get("sftp.password");
+    @Autowired
+    private SftpConfig config;
 
     /**
      * 创建Sftp对象
@@ -28,7 +30,7 @@ public class SftpFactory extends BasePooledObjectFactory<ChannelSftp> {
      */
     @Override
     public ChannelSftp create() throws Exception {
-        return connect(host, port, username, password);
+        return connect(config.getHost(), Integer.parseInt(config.getPort()), config.getUsername(), config.getPassword());
     }
 
     private ChannelSftp connect(String host, int port, String username, String password) throws JSchException {

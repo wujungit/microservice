@@ -5,6 +5,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.BaseObjectPool;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @Date: 2019/5/18 23:09
  * @Description: Sftp连接池
  **/
+@Component
 @Slf4j
 public class SftpPool extends BaseObjectPool<ChannelSftp> {
 
