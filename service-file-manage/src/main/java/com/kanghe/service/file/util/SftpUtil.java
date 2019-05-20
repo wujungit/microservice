@@ -3,7 +3,6 @@ package com.kanghe.service.file.util;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -17,20 +16,20 @@ import java.io.*;
 @Slf4j
 public class SftpUtil {
 
-    @Autowired
-    private SftpPool pool;
-
     private ChannelSftp sftp;
 
-    public SftpUtil() throws Exception {
-        this.sftp = borrowSftp();
+    public SftpUtil() {
     }
 
     private ChannelSftp borrowSftp() throws Exception {
+        SftpFactory factory = new SftpFactory();
+        SftpPool pool = new SftpPool(factory);
         return pool.borrowObject();
     }
 
-    public void returnSftp() {
+    public void returnSftp() throws Exception {
+        SftpFactory factory = new SftpFactory();
+        SftpPool pool = new SftpPool(factory);
         pool.returnObject(sftp);
     }
 

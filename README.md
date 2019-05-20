@@ -57,7 +57,11 @@
 * 集合：RedisTemplate.opsForSet()
 * 哈希：RedisTemplate.opsForHash()
 * 有序集合：RedisTemplate.opsForZSet()
-### 四、Docker
+### 四、XxPay
+* XxPay聚合支付使用Java开发，包括spring-cloud、dubbo、spring-boot三个架构版本，已接入微信、支付宝等主流支付渠道，可直接用于生产环境
+#### 1、微信支付
+#### 2、支付宝支付
+### 五、Docker
 #### 1、核心概念
 * 一个开源的应用容器引擎；
 * 支持将软件编译成一个镜像，然后在镜像中各种软件做好配置，将镜像发布出去，其他使用者可以直接使用这个镜像；
@@ -67,8 +71,7 @@
 * docker仓库（registry）：用来保存各种打包好的软件镜像；
 * docker镜像（images）：软件打包好的镜像，放在docker仓库中；
 * docker容器（container）：镜像启动后的实例称为一个容器；
-#### 
-### SQL优化
+### 六、SQL优化
 * 负向条件查询不能使用索引（!=/not in/not exists）,可以优化为in查询；
 * 前导模糊查询不能使用索引（like '%XX'）,非前导模糊查询则可以（like 'XX%'）；
 * 数据区分度不大的字段不宜使用索引（经验值80%），例如性别（男/女）不易使用索引；
