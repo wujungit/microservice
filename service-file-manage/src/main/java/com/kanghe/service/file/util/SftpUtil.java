@@ -3,7 +3,6 @@ package com.kanghe.service.file.util;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -17,23 +16,6 @@ import java.io.*;
 @Slf4j
 public class SftpUtil {
 
-    @Autowired
-    private SftpPool pool;
-
-    private ChannelSftp sftp;
-
-    public SftpUtil() throws Exception {
-        this.sftp = borrowSftp();
-    }
-
-    private ChannelSftp borrowSftp() throws Exception {
-        return pool.borrowObject();
-    }
-
-    public void returnSftp() {
-        pool.returnObject(sftp);
-    }
-
     /**
      * 上传文件
      *
@@ -42,7 +24,7 @@ public class SftpUtil {
      * @param fileName  文件保存名称
      * @return
      */
-    public boolean upload(String directory, byte[] bytes, String fileName) {
+    public boolean upload(ChannelSftp sftp, String directory, byte[] bytes, String fileName) {
         InputStream inputStream = null;
         try {
             sftp.cd(directory);
@@ -71,9 +53,10 @@ public class SftpUtil {
      * @param directory
      * @return Boolean
      */
-    public Boolean makeDirectory(String directory) {
+    public Boolean makeDirectory(ChannelSftp sftp, String directory) {
         try {
-            if (isDirExist(directory)) {
+            log.info("sftp={},directory={}", sftp, directory);
+            if (isDirExist(sftp, directory)) {
                 sftp.cd(directory);
                 return true;
             }
@@ -84,7 +67,7 @@ public class SftpUtil {
                     continue;
                 }
                 filePath.append(path).append("/");
-                if (isDirExist(filePath.toString())) {
+                if (isDirExist(sftp, filePath.toString())) {
                     sftp.cd(filePath.toString());
                 } else {
                     // 建立目录
@@ -107,7 +90,7 @@ public class SftpUtil {
      * @param directory
      * @return
      */
-    public boolean isDirExist(String directory) {
+    public boolean isDirExist(ChannelSftp sftp, String directory) {
         boolean isDirExistFlag = false;
         try {
             SftpATTRS sftpATTRS = sftp.lstat(directory);
@@ -127,7 +110,7 @@ public class SftpUtil {
      * @param downloadFilePath 下载的文件完整目录
      * @param saveFile         存在本地的路径
      */
-    public Boolean download(String downloadFilePath, String saveFile) {
+    public Boolean download(ChannelSftp sftp, String downloadFilePath, String saveFile) {
         try {
             int i = downloadFilePath.lastIndexOf("/");
             if (i == -1) {
@@ -152,7 +135,7 @@ public class SftpUtil {
      * @param directory  要删除文件所在目录
      * @param deleteFile 要删除的文件
      */
-    public boolean delete(String directory, String deleteFile) {
+    public boolean delete(ChannelSftp sftp, String directory, String deleteFile) {
         try {
             sftp.cd(directory);
             sftp.rm(deleteFile);
