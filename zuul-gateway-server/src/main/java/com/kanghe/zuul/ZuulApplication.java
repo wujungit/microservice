@@ -10,7 +10,6 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
  * @Date: 2019/5/23 10:45
  * @Description:
  */
-
 @EnableZuulProxy
 @EnableEurekaClient
 @SpringBootApplication
