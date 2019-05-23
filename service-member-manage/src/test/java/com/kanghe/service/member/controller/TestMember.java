@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
 /**
@@ -41,6 +39,39 @@ public class TestMember {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void copyFile() {
+        Resource resource = new ClassPathResource("mapper");
+        log.info(resource.getFilename());
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        try {
+            File[] files = resource.getFile().listFiles();
+            if (null != files && files.length > 0) {
+                for (File file : files) {
+                    br = new BufferedReader(new FileReader(file));
+                    String fileName = "C:/Users/W_jun1/Desktop/download/" + file.getName();
+                    bw = new BufferedWriter(new FileWriter(fileName));
+                    String temp;
+                    while ((temp = br.readLine()) != null) {
+                        bw.write(temp + "\n");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (null != br && null != bw) {
+                try {
+                    br.close();
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
