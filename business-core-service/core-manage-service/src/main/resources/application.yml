@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: business-health-database-manager
+    name: core-manage-service
 
 eureka:
   instance:

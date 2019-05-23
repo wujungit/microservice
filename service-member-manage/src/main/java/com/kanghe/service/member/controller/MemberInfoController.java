@@ -6,7 +6,6 @@ import com.kanghe.component.common.base.PageResult;
 import com.kanghe.component.common.constant.ResponseCode;
 import com.kanghe.component.common.dto.member.dto.GetMemberInfoListDTO;
 import com.kanghe.component.common.enums.ResultEnum;
-import com.kanghe.component.redis.util.RedisUtil;
 import com.kanghe.service.member.service.MemberInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,9 +31,6 @@ public class MemberInfoController {
 
     @Autowired
     private MemberInfoService memberInfoService;
-
-    @Autowired
-    private RedisUtil redisUtil;
 
     @ApiOperation(value = "会员信息列表查询", notes = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @PostMapping(value = "/getMemberInfoList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

@@ -74,9 +74,8 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      * 返还对象到连接池中
      *
      * @param sftp
-     * @throws Exception
      */
-    @Overridee
+    @Override
     public void returnObject(ChannelSftp sftp) {
         try {
             if (sftp != null && !sftpDeque.offer(sftp, 3, TimeUnit.SECONDS)) {
@@ -84,7 +83,7 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
             }
         } catch (Exception e) {
             e.printStackTrace();
-       }
+        }
     }
 
     /**

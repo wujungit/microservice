@@ -18,10 +18,4 @@ public class PageParam implements Serializable {
     @ApiModelProperty(value = "页数", name = "pageSize", required = false)
     private int pageSize = 10;
 
-    @ApiModelProperty(value = "排序内容", name = "orderBy", required = false)
-    private String orderBy;
-
-    @ApiModelProperty(value = "是否升序排序，默认升序排序", name = "isAsc", required = false)
-    private Boolean isAsc = true;
-
 }
