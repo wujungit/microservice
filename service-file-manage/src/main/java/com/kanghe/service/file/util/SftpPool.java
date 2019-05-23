@@ -1,7 +1,6 @@
 package com.kanghe.service.file.util;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.jcraft.jsch.JSchException;
 import com.kanghe.component.common.enums.ResultEnum;
 import com.kanghe.component.common.exception.BuzException;
 import lombok.extern.slf4j.Slf4j;
@@ -77,15 +76,15 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      * @param sftp
      * @throws Exception
      */
-    @Override
+    @Overridee
     public void returnObject(ChannelSftp sftp) {
         try {
             if (sftp != null && !sftpDeque.offer(sftp, 3, TimeUnit.SECONDS)) {
                 sftpFactory.destroyObject(sftpFactory.wrap(sftp));
             }
-        } catch (InterruptedException | JSchException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
+       }
     }
 
     /**

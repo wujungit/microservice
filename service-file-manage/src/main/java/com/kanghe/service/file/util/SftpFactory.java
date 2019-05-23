@@ -33,7 +33,7 @@ public class SftpFactory extends BasePooledObjectFactory<ChannelSftp> {
         return connect(config.getHost(), Integer.parseInt(config.getPort()), config.getUsername(), config.getPassword());
     }
 
-    private ChannelSftp connect(String host, int port, String username, String password) throws JSchException {
+    private ChannelSftp connect(String host, int port, String username, String password) throws Exception {
         log.info("sftp connect: host={},port={},username={},password={}", host, port, username, password);
         JSch jsch = new JSch();
         jsch.getSession(username, host, port);
@@ -68,7 +68,7 @@ public class SftpFactory extends BasePooledObjectFactory<ChannelSftp> {
      * @param sftpPooled
      */
     @Override
-    public void destroyObject(PooledObject<ChannelSftp> sftpPooled) throws JSchException {
+    public void destroyObject(PooledObject<ChannelSftp> sftpPooled) throws Exception {
         if (sftpPooled == null) {
             return;
         }
@@ -87,6 +87,6 @@ public class SftpFactory extends BasePooledObjectFactory<ChannelSftp> {
     @Override
     public boolean validateObject(PooledObject<ChannelSftp> sftpPooled) {
         ChannelSftp sftp = sftpPooled.getObject();
-        return sftp.isConnected();
+        return !sftp.isClosed();
     }
 }
