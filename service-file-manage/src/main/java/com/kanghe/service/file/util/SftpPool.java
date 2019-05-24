@@ -1,8 +1,6 @@
 package com.kanghe.service.file.util;
 
 import com.jcraft.jsch.ChannelSftp;
-import com.kanghe.component.common.enums.ResultEnum;
-import com.kanghe.component.common.exception.BuzException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.BaseObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,22 +50,16 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      * @return
      */
     @Override
-    public ChannelSftp borrowObject() {
-        try {
-            ChannelSftp sftp = sftpDeque.take();
-            if (ObjectUtils.isEmpty(sftp)) {
-                sftp = sftpFactory.create();
-                returnObject(sftp);
-            } else if (!sftpFactory.validateObject(sftpFactory.wrap(sftp))) {
-                invalidateObject(sftp);
-                sftp = sftpFactory.create();
-                returnObject(sftp);
-            }
-            return sftp;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+    public ChannelSftp borrowObject() throws Exception {
+        ChannelSftp sftp = sftpDeque.take();
+        if (ObjectUtils.isEmpty(sftp)) {
+            sftp = sftpFactory.create();
+        } else if (!sftpFactory.validateObject(sftpFactory.wrap(sftp))) {
+            invalidateObject(sftp);
+            sftp = sftpFactory.create();
         }
+        returnObject(sftp);
+        return sftp;
     }
 
     /**
@@ -83,6 +75,7 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            log.warn("返还对象到连接池中失败");
         }
     }
 
@@ -93,13 +86,8 @@ public class SftpPool extends BaseObjectPool<ChannelSftp> {
      */
     @Override
     public void invalidateObject(ChannelSftp sftp) {
-        try {
-            sftp.cd("/");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            sftpDeque.remove(sftp);
-        }
+        log.info("invalidateObject");
+        sftpDeque.remove(sftp);
     }
 
     /**

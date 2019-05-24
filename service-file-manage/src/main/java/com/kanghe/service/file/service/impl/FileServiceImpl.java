@@ -15,7 +15,6 @@ import com.kanghe.service.file.enums.DataTypeEnum;
 import com.kanghe.service.file.enums.FileTypeEnum;
 import com.kanghe.service.file.mapper.FileInfoMapper;
 import com.kanghe.service.file.service.IFileService;
-import com.kanghe.service.file.util.SftpPool;
 import com.kanghe.service.file.util.SftpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +51,6 @@ public class FileServiceImpl implements IFileService {
     @Autowired
     private FileInfoMapper fileInfoMapper;
     @Autowired
-    private SftpPool sftpPool;
-    @Autowired
     private SftpUtil sftpUtil;
 
     @Override
@@ -71,114 +68,45 @@ public class FileServiceImpl implements IFileService {
 
     @Override
     public List<FileInfoVO> uploadFileBatch(UploadFileBatchDTO dto) {
-        ChannelSftp sftp = null;
-        try {
-            List<FileDTO> fileDTOList = dto.getFileDTOList();
-            String operator = dto.getOperator();
-            Integer origin = dto.getOrigin();
-            // 校验文件大小，最大50M
-            log.info("获取文件字节数据: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            for (FileDTO fileDTO : fileDTOList) {
-                Integer dataType = fileDTO.getDataType();
-                byte[] bytes = fileDTO.getBytes();
-                String base64 = fileDTO.getBase64();
-                // 获取文件字节数据
-                if (DataTypeEnum.BASE64.getCode().equals(dataType)) {
-                    bytes = base64ToBytes(base64);
-                }
-                if (bytes.length > FILE_BYTES_MAX) {
-                    throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "批量文件上传失败：单个文件最大不超过50M");
-                }
-            }
-            log.info("获取文件字节数据: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            List<FileInfoVO> result = new ArrayList<>();
-            List<FileInfo> list = new ArrayList<>();
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
-            for (FileDTO fileDTO : fileDTOList) {
-                Integer dataType = fileDTO.getDataType();
-                byte[] bytes = fileDTO.getBytes();
-                String base64 = fileDTO.getBase64();
-                String fileRealName = fileDTO.getFileRealName();
-                Integer fileType = fileDTO.getFileType();
-                String fileSuffix = fileDTO.getFileSuffix();
-                String modelId = fileDTO.getModelId();
-                // 获取文件字节数据
-                if (DataTypeEnum.BASE64.getCode().equals(dataType)) {
-                    bytes = base64ToBytes(base64);
-                }
-                // 获取文件md5值
-                String fileMd5 = MD5Util.getMD5String(bytes);
-                // 生成待上传的文件名
-                String yyyyMMdd = DateUtils.getCurrentTimeStr("yyyyMMdd");
-                String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-                String fileName = getUTF8StringFromGBKString(fileRealName.substring(0, fileRealName.lastIndexOf("."))) + "_" + yyyyMMdd + "_" + uuid + "." + fileSuffix;
-                // 获取文件相对路径和绝对路径
-                String uploadDir = getUploadDirectory(fileType);
-                String relativeDir = baseRelativeDir + uploadDir;
-                String absoluteDir = baseAbsoluteDir + uploadDir;
-                String relativePath = relativeDir + "/" + fileName;
-                String absolutePath = absoluteDir + "/" + fileName;
-                // 创建文件目录
-                Boolean makeDir = sftpUtil.makeDirectory(sftp, relativeDir);
-                if (!makeDir) {
-                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "创建文件目录失败");
-                }
-                // 上传文件
-                log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-                boolean upload = sftpUtil.upload(sftp, relativeDir, bytes, fileName);
-                log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-                if (!upload) {
-                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败");
-                }
-                FileInfo fileInfo = new FileInfo();
-                fileInfo.setCode(CommonCodeUtil.generateRandomCoded(FILE_PREFIX));
-                fileInfo.setFileName(fileName);
-                fileInfo.setFileRealName(fileRealName);
-                fileInfo.setFileType(fileType);
-                fileInfo.setFileSuffix(fileSuffix);
-                fileInfo.setFileMd5(fileMd5);
-                fileInfo.setFileSize(bytes.length / 1024);
-                fileInfo.setFileUrl(domain + uploadDir + "/" + fileName);
-                fileInfo.setRelativePath(relativePath);
-                fileInfo.setAbsolutePath(absolutePath);
-                fileInfo.setFileOrigin(origin);
-                fileInfo.setModelId(modelId);
-                fileInfo.setOperator(operator);
-                list.add(fileInfo);
-                result.add(getFileInfoVO(fileInfo));
-            }
-            if (list.size() > 0) {
-                fileInfoMapper.insertBatch(list);
-            }
-            return result;
-        } finally {
-            sftpPool.returnObject(sftp);
-        }
-    }
-
-    @Override
-    public FileInfoVO uploadFile(UploadFileDTO dto) {
-        ChannelSftp sftp = null;
-        try {
-            Integer dataType = dto.getDataType();
-            byte[] bytes = dto.getBytes();
-            String base64 = dto.getBase64();
-            String fileRealName = dto.getFileRealName();
-            Integer fileType = dto.getFileType();
-            String fileSuffix = dto.getFileSuffix();
-            String modelId = dto.getModelId();
-            String operator = dto.getOperator();
-            Integer origin = dto.getOrigin();
+        List<FileDTO> fileDTOList = dto.getFileDTOList();
+        String operator = dto.getOperator();
+        Integer origin = dto.getOrigin();
+        // 校验文件大小，最大50M
+        log.info("获取文件字节数据: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+        for (FileDTO fileDTO : fileDTOList) {
+            Integer dataType = fileDTO.getDataType();
+            byte[] bytes = fileDTO.getBytes();
+            String base64 = fileDTO.getBase64();
             // 获取文件字节数据
-            log.info("获取文件字节数据: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
             if (DataTypeEnum.BASE64.getCode().equals(dataType)) {
                 bytes = base64ToBytes(base64);
             }
-            log.info("获取文件字节数据: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            // 校验文件大小，最大50M
             if (bytes.length > FILE_BYTES_MAX) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "文件上传失败：单个文件最大不超过50M");
+                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "批量文件上传失败：单个文件最大不超过50M");
+            }
+        }
+        log.info("获取文件字节数据: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+        List<FileInfoVO> result = new ArrayList<>();
+        List<FileInfo> list = new ArrayList<>();
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        for (FileDTO fileDTO : fileDTOList) {
+            Integer dataType = fileDTO.getDataType();
+            byte[] bytes = fileDTO.getBytes();
+            String base64 = fileDTO.getBase64();
+            String fileRealName = fileDTO.getFileRealName();
+            Integer fileType = fileDTO.getFileType();
+            String fileSuffix = fileDTO.getFileSuffix();
+            String modelId = fileDTO.getModelId();
+            // 获取文件字节数据
+            if (DataTypeEnum.BASE64.getCode().equals(dataType)) {
+                bytes = base64ToBytes(base64);
             }
             // 获取文件md5值
             String fileMd5 = MD5Util.getMD5String(bytes);
@@ -192,19 +120,27 @@ public class FileServiceImpl implements IFileService {
             String absoluteDir = baseAbsoluteDir + uploadDir;
             String relativePath = relativeDir + "/" + fileName;
             String absolutePath = absoluteDir + "/" + fileName;
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
             // 创建文件目录
-            log.info("relativeDir={}", relativeDir);
-            Boolean makeDir = sftpUtil.makeDirectory(sftp, relativeDir);
-            if (!makeDir) {
-                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "创建文件目录失败");
+            try {
+                sftpUtil.makeDirectory(sftp, relativeDir);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.warn("创建文件目录失败");
+                try {
+                    sftp = sftpUtil.getNewSftp();
+                    sftpUtil.makeDirectory(sftp, relativeDir);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败：文件服务器异常，请稍后再试");
+                }
             }
             // 上传文件
-            log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            boolean upload = sftpUtil.upload(sftp, relativeDir, bytes, fileName);
-            log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
-            if (!upload) {
+            try {
+                log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+                sftpUtil.upload(sftp, relativeDir, bytes, fileName);
+                log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+            } catch (Exception e) {
+                e.printStackTrace();
                 throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败");
             }
             FileInfo fileInfo = new FileInfo();
@@ -218,14 +154,98 @@ public class FileServiceImpl implements IFileService {
             fileInfo.setFileUrl(domain + uploadDir + "/" + fileName);
             fileInfo.setRelativePath(relativePath);
             fileInfo.setAbsolutePath(absolutePath);
-            fileInfo.setModelId(modelId);
             fileInfo.setFileOrigin(origin);
+            fileInfo.setModelId(modelId);
             fileInfo.setOperator(operator);
-            fileInfoMapper.insertSelective(fileInfo);
-            return getFileInfoVO(fileInfo);
-        } finally {
-            sftpPool.returnObject(sftp);
+            list.add(fileInfo);
+            result.add(getFileInfoVO(fileInfo));
         }
+        if (list.size() > 0) {
+            fileInfoMapper.insertBatch(list);
+        }
+        return result;
+    }
+
+    @Override
+    public FileInfoVO uploadFile(UploadFileDTO dto) {
+        Integer dataType = dto.getDataType();
+        byte[] bytes = dto.getBytes();
+        String base64 = dto.getBase64();
+        String fileRealName = dto.getFileRealName();
+        Integer fileType = dto.getFileType();
+        String fileSuffix = dto.getFileSuffix();
+        String modelId = dto.getModelId();
+        String operator = dto.getOperator();
+        Integer origin = dto.getOrigin();
+        // 获取文件字节数据
+        log.info("获取文件字节数据: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+        if (DataTypeEnum.BASE64.getCode().equals(dataType)) {
+            bytes = base64ToBytes(base64);
+        }
+        log.info("获取文件字节数据: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+        // 校验文件大小，最大50M
+        if (bytes.length > FILE_BYTES_MAX) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "文件上传失败：单个文件最大不超过50M");
+        }
+        // 获取文件md5值
+        String fileMd5 = MD5Util.getMD5String(bytes);
+        // 生成待上传的文件名
+        String yyyyMMdd = DateUtils.getCurrentTimeStr("yyyyMMdd");
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+        String fileName = getUTF8StringFromGBKString(fileRealName.substring(0, fileRealName.lastIndexOf("."))) + "_" + yyyyMMdd + "_" + uuid + "." + fileSuffix;
+        // 获取文件相对路径和绝对路径
+        String uploadDir = getUploadDirectory(fileType);
+        String relativeDir = baseRelativeDir + uploadDir;
+        String absoluteDir = baseAbsoluteDir + uploadDir;
+        String relativePath = relativeDir + "/" + fileName;
+        String absolutePath = absoluteDir + "/" + fileName;
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        // 创建文件目录
+        try {
+            sftpUtil.makeDirectory(sftp, relativeDir);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("创建文件目录失败");
+            try {
+                sftp = sftpUtil.getNewSftp();
+                sftpUtil.makeDirectory(sftp, relativeDir);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败：文件服务器异常，请稍后再试");
+            }
+        }
+        // 上传文件
+        try {
+            log.info("上传文件: start={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+            sftpUtil.upload(sftp, relativeDir, bytes, fileName);
+            log.info("上传文件: end={}", DateUtils.getCurrentTimeStr("HH:mm:ss.sss"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "上传文件失败");
+        }
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setCode(CommonCodeUtil.generateRandomCoded(FILE_PREFIX));
+        fileInfo.setFileName(fileName);
+        fileInfo.setFileRealName(fileRealName);
+        fileInfo.setFileType(fileType);
+        fileInfo.setFileSuffix(fileSuffix);
+        fileInfo.setFileMd5(fileMd5);
+        fileInfo.setFileSize(bytes.length / 1024);
+        fileInfo.setFileUrl(domain + uploadDir + "/" + fileName);
+        fileInfo.setRelativePath(relativePath);
+        fileInfo.setAbsolutePath(absolutePath);
+        fileInfo.setModelId(modelId);
+        fileInfo.setFileOrigin(origin);
+        fileInfo.setOperator(operator);
+        fileInfoMapper.insertSelective(fileInfo);
+        return getFileInfoVO(fileInfo);
     }
 
     private static String getUTF8StringFromGBKString(String gbkStr) {
@@ -281,128 +301,168 @@ public class FileServiceImpl implements IFileService {
 
     @Override
     public FileInfoVO downloadFile(String fileCode, String directory) {
-        ChannelSftp sftp = null;
-        try {
-            // 参数校验
-            if (StringUtils.isBlank(fileCode)) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码");
-            }
-            if (StringUtils.isBlank(directory)) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：下载文件目录");
-            }
-            // 判断文件是否存在
-            FileInfo existFileInfo = fileInfoMapper.selectByCode(fileCode);
-            if (null == existFileInfo) {
-                throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "下载失败：文件不存在");
-            }
-            String relativePath = existFileInfo.getRelativePath();
-            String fileRealName = existFileInfo.getFileRealName();
-            String saveFile = directory + "/" + fileRealName;
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
-            Boolean download = sftpUtil.download(sftp, relativePath, saveFile);
-            if (!download) {
-                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败");
-            }
-            return getFileInfoVO(existFileInfo);
-        } finally {
-            sftpPool.returnObject(sftp);
+        // 参数校验
+        if (StringUtils.isBlank(fileCode)) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码");
         }
+        if (StringUtils.isBlank(directory)) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：下载文件目录");
+        }
+        // 判断文件是否存在
+        FileInfo existFileInfo = fileInfoMapper.selectByCode(fileCode);
+        if (null == existFileInfo) {
+            throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "下载失败：文件不存在");
+        }
+        String relativePath = existFileInfo.getRelativePath();
+        String fileRealName = existFileInfo.getFileRealName();
+        String saveFile = directory + "/" + fileRealName;
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        try {
+            sftpUtil.download(sftp, relativePath, saveFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("下载文件失败");
+            try {
+                sftp = sftpUtil.getNewSftp();
+                sftpUtil.download(sftp, relativePath, saveFile);
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败：文件服务器异常，请稍后再试");
+            }
+        }
+        return getFileInfoVO(existFileInfo);
     }
 
     @Override
     public List<FileInfoVO> downloadFileBatch(List<String> fileCodes, String directory) {
-        ChannelSftp sftp = null;
-        try {
-            // 参数校验
-            if (null == fileCodes || fileCodes.size() == 0) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码列表");
-            }
-            if (StringUtils.isBlank(directory)) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：下载文件目录");
-            }
-            // 判断文件列表是否存在
-            List<FileInfo> fileInfos = fileInfoMapper.selectByCodes(fileCodes);
-            if (null == fileInfos || fileInfos.size() == 0) {
-                throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "批量下载文件失败：文件不存在");
-            }
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
-            List<FileInfoVO> result = new ArrayList<>();
-            for (FileInfo fileInfo : fileInfos) {
-                String relativePath = fileInfo.getRelativePath();
-                String fileRealName = fileInfo.getFileRealName();
-                String saveFile = directory + "/" + fileRealName;
-                Boolean download = sftpUtil.download(sftp, relativePath, saveFile);
-                if (!download) {
-                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败");
-                }
-                result.add(getFileInfoVO(fileInfo));
-            }
-            return result;
-        } finally {
-            sftpPool.returnObject(sftp);
+        // 参数校验
+        if (null == fileCodes || fileCodes.size() == 0) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码列表");
         }
+        if (StringUtils.isBlank(directory)) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：下载文件目录");
+        }
+        // 判断文件列表是否存在
+        List<FileInfo> fileInfos = fileInfoMapper.selectByCodes(fileCodes);
+        if (null == fileInfos || fileInfos.size() == 0) {
+            throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "批量下载文件失败：文件不存在");
+        }
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        List<FileInfoVO> result = new ArrayList<>();
+        for (FileInfo fileInfo : fileInfos) {
+            String relativePath = fileInfo.getRelativePath();
+            String fileRealName = fileInfo.getFileRealName();
+            String saveFile = directory + "/" + fileRealName;
+            try {
+                sftpUtil.download(sftp, relativePath, saveFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.warn("下载文件失败");
+                try {
+                    sftp = sftpUtil.getNewSftp();
+                    sftpUtil.download(sftp, relativePath, saveFile);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载文件失败：文件服务器异常，请稍后再试");
+                }
+            }
+            result.add(getFileInfoVO(fileInfo));
+        }
+        return result;
     }
 
     @Override
     public Boolean deleteFile(String fileCode) {
-        ChannelSftp sftp = null;
-        try {
-            // 参数校验
-            if (StringUtils.isBlank(fileCode)) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码");
-            }
-            // 判断文件是否存在
-            FileInfo existFileInfo = fileInfoMapper.selectByCode(fileCode);
-            if (null == existFileInfo) {
-                throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "删除失败：文件不存在");
-            }
-            String relativePath = existFileInfo.getRelativePath();
-            String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
-            boolean delete = sftpUtil.delete(sftp, directory, existFileInfo.getFileName());
-            if (!delete) {
-                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败");
-            }
-            // 记录表t_file_info
-            fileInfoMapper.logicDelete(existFileInfo.getCode());
-            return Boolean.TRUE;
-        } finally {
-            sftpPool.returnObject(sftp);
+        // 参数校验
+        if (StringUtils.isBlank(fileCode)) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码");
         }
+        // 判断文件是否存在
+        FileInfo existFileInfo = fileInfoMapper.selectByCode(fileCode);
+        if (null == existFileInfo) {
+            throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "删除失败：文件不存在");
+        }
+        String relativePath = existFileInfo.getRelativePath();
+        String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        try {
+            sftpUtil.delete(sftp, directory, existFileInfo.getFileName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.warn("删除文件失败");
+            try {
+                sftp = sftpUtil.getNewSftp();
+                sftpUtil.delete(sftp, directory, existFileInfo.getFileName());
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败：文件服务器异常，请稍后再试");
+            }
+        }
+        // 记录表t_file_info
+        fileInfoMapper.logicDelete(existFileInfo.getCode());
+        return Boolean.TRUE;
     }
 
     @Override
     public Boolean deleteFileBatch(List<String> fileCodes) {
-        ChannelSftp sftp = null;
-        try {
-            // 参数校验
-            if (null == fileCodes || fileCodes.size() == 0) {
-                throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码列表");
-            }
-            // 判断文件列表是否存在
-            List<FileInfo> fileInfos = fileInfoMapper.selectByCodes(fileCodes);
-            if (null == fileInfos || fileInfos.size() == 0) {
-                throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "删除失败：文件不存在");
-            }
-            // 获取Sftp连接
-            sftp = sftpPool.borrowObject();
-            for (FileInfo fileInfo : fileInfos) {
-                String relativePath = fileInfo.getRelativePath();
-                String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
-                boolean delete = sftpUtil.delete(sftp, directory, fileInfo.getFileName());
-                if (!delete) {
-                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败");
-                }
-                // 记录表t_file_info
-                fileInfoMapper.logicDelete(fileInfo.getCode());
-            }
-            return Boolean.TRUE;
-        } finally {
-            sftpPool.returnObject(sftp);
+        // 参数校验
+        if (null == fileCodes || fileCodes.size() == 0) {
+            throw new BuzException(ResultEnum.INVALID_PARAM.getCode(), "参数不能为空：文件编码列表");
         }
+        // 判断文件列表是否存在
+        List<FileInfo> fileInfos = fileInfoMapper.selectByCodes(fileCodes);
+        if (null == fileInfos || fileInfos.size() == 0) {
+            throw new BuzException(ResultEnum.DATA_NOT_FOUND.getCode(), "删除失败：文件不存在");
+        }
+        // 获取Sftp连接
+        ChannelSftp sftp;
+        try {
+            sftp = sftpUtil.getSftp();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "从连接池中获取对象失败");
+        }
+        for (FileInfo fileInfo : fileInfos) {
+            String relativePath = fileInfo.getRelativePath();
+            String directory = relativePath.substring(0, relativePath.lastIndexOf("/"));
+            try {
+                sftpUtil.delete(sftp, directory, fileInfo.getFileName());
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.warn("删除文件失败");
+                try {
+                    sftp = sftpUtil.getNewSftp();
+                    sftpUtil.delete(sftp, directory, fileInfo.getFileName());
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "删除文件失败：文件服务器异常，请稍后再试");
+                }
+            }
+            // 记录表t_file_info
+            fileInfoMapper.logicDelete(fileInfo.getCode());
+        }
+        return Boolean.TRUE;
     }
 
     /**

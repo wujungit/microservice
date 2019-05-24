@@ -24,4 +24,5 @@ public class SftpConfig {
 
     @Value("${file.sftp.password}")
     private String password;
+
 }

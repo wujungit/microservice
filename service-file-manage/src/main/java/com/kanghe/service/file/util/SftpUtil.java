@@ -2,7 +2,10 @@ package com.kanghe.service.file.util;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpATTRS;
+import com.kanghe.component.common.enums.ResultEnum;
+import com.kanghe.component.common.exception.BuzException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
@@ -16,6 +19,19 @@ import java.io.*;
 @Slf4j
 public class SftpUtil {
 
+    @Autowired
+    private SftpPool sftpPool;
+    @Autowired
+    private SftpFactory sftpFactory;
+
+    public ChannelSftp getSftp() throws Exception {
+        return sftpPool.borrowObject();
+    }
+
+    public ChannelSftp getNewSftp() throws Exception {
+        return sftpFactory.create();
+    }
+
     /**
      * 上传文件
      *
@@ -24,7 +40,7 @@ public class SftpUtil {
      * @param fileName  文件保存名称
      * @return
      */
-    public boolean upload(ChannelSftp sftp, String directory, byte[] bytes, String fileName) {
+    public void upload(ChannelSftp sftp, String directory, byte[] bytes, String fileName) throws Exception {
         InputStream inputStream = null;
         try {
             sftp.cd(directory);
@@ -32,10 +48,6 @@ public class SftpUtil {
                 inputStream = new ByteArrayInputStream(bytes);
             }
             sftp.put(inputStream, fileName);
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
         } finally {
             try {
                 if (inputStream != null) {
@@ -53,35 +65,29 @@ public class SftpUtil {
      * @param directory
      * @return Boolean
      */
-    public Boolean makeDirectory(ChannelSftp sftp, String directory) {
-        try {
-            log.info("sftp={},directory={}", sftp, directory);
-            if (isDirExist(sftp, directory)) {
-                sftp.cd(directory);
-                return true;
-            }
-            String[] pathArray = directory.split("/");
-            StringBuilder filePath = new StringBuilder("/");
-            for (String path : pathArray) {
-                if ("".equals(path)) {
-                    continue;
-                }
-                filePath.append(path).append("/");
-                if (isDirExist(sftp, filePath.toString())) {
-                    sftp.cd(filePath.toString());
-                } else {
-                    // 建立目录
-                    sftp.mkdir(filePath.toString());
-                    // 进入并设置为当前目录
-                    sftp.cd(filePath.toString());
-                }
-            }
+    public void makeDirectory(ChannelSftp sftp, String directory) throws Exception {
+        log.info("sftp={},directory={}", sftp, directory);
+        if (isDirExist(sftp, directory)) {
             sftp.cd(directory);
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
+            return;
         }
+        String[] pathArray = directory.split("/");
+        StringBuilder filePath = new StringBuilder("/");
+        for (String path : pathArray) {
+            if ("".equals(path)) {
+                continue;
+            }
+            filePath.append(path).append("/");
+            if (isDirExist(sftp, filePath.toString())) {
+                sftp.cd(filePath.toString());
+            } else {
+                // 建立目录
+                sftp.mkdir(filePath.toString());
+                // 进入并设置为当前目录
+                sftp.cd(filePath.toString());
+            }
+        }
+        sftp.cd(directory);
     }
 
     /**
@@ -97,7 +103,7 @@ public class SftpUtil {
             isDirExistFlag = true;
             return sftpATTRS.isDir();
         } catch (Exception e) {
-            if ("no such file".equals(e.getMessage().toLowerCase())) {
+            if (e.getMessage().toLowerCase().equals("no such file")) {
                 isDirExistFlag = false;
             }
         }
@@ -110,23 +116,17 @@ public class SftpUtil {
      * @param downloadFilePath 下载的文件完整目录
      * @param saveFile         存在本地的路径
      */
-    public Boolean download(ChannelSftp sftp, String downloadFilePath, String saveFile) {
-        try {
-            int i = downloadFilePath.lastIndexOf("/");
-            if (i == -1) {
-                return false;
-            }
-            String directory = downloadFilePath.substring(0, i);
-            sftp.cd(directory);
-            File file = new File(saveFile);
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            sftp.get(downloadFilePath.substring(i + 1), fileOutputStream);
-            fileOutputStream.close();
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
+    public void download(ChannelSftp sftp, String downloadFilePath, String saveFile) throws Exception {
+        int i = downloadFilePath.lastIndexOf("/");
+        if (i == -1) {
+            throw new BuzException(ResultEnum.SYSTEM_ERROR.getCode(), "下载的文件完整目录格式正确");
         }
+        String directory = downloadFilePath.substring(0, i);
+        sftp.cd(directory);
+        File file = new File(saveFile);
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+        sftp.get(downloadFilePath.substring(i + 1), fileOutputStream);
+        fileOutputStream.close();
     }
 
     /**
@@ -135,14 +135,8 @@ public class SftpUtil {
      * @param directory  要删除文件所在目录
      * @param deleteFile 要删除的文件
      */
-    public boolean delete(ChannelSftp sftp, String directory, String deleteFile) {
-        try {
-            sftp.cd(directory);
-            sftp.rm(deleteFile);
-            return true;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
-        }
+    public void delete(ChannelSftp sftp, String directory, String deleteFile) throws Exception {
+        sftp.cd(directory);
+        sftp.rm(deleteFile);
     }
 }
