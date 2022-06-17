@@ -54,7 +54,7 @@
         <!--rocketMQ-->
         <rocketmq.version>4.3.0</rocketmq.version>
         <!--json-->
-        <fastjson.version>1.2.51</fastjson.version>
+        <fastjson.version>1.2.83</fastjson.version>
         <jackson.version>2.9.6</jackson.version>
         <junit.version>4.12</junit.version>
         <commons-lang3.version>3.8</commons-lang3.version>
